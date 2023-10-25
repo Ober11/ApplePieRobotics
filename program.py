@@ -52,14 +52,14 @@ def hel(speed, megt, target=g.angle, multiplier = 1.5):
 def fordulas(target, multiplier=0.8):
     if target < 0:
         target=target*-1
-        target=target%180
+        target=target%360
         target=target*-1
     elif target >= 0:
-        target=target%180  
+        target=target%360  
     while target != g.angle:
         diff = target-g.angle
         diff*multiplier
-        if diff > 100: 
+        if diff > 100:
             diff = 100
         elif diff < -100:
             diff = -100
