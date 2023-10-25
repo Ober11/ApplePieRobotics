@@ -1,5 +1,7 @@
+#!/usr/bin/env micropython
 from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
+import time
 mt = MoveTank("outA", "outD",)
 ms = MoveSteering("outA", "outD",)
 mr = LargeMotor("outA")
@@ -48,6 +50,12 @@ def hel(speed, megt, target=g.angle, multiplier = 1.5):
     return 0
 
 def fordulas(target, multiplier=0.8):
+    if target < 0:
+        target=target*-1
+        target=target%180
+        target=target*-1
+    elif target >= 0:
+        target=target%180  
     while target != g.angle:
         diff = target-g.angle
         diff*multiplier
@@ -59,7 +67,10 @@ def fordulas(target, multiplier=0.8):
         print(diff, target, g.angle)
     mt.stop()
 
-hel(30, 180)
-
-    
-
+fordulas(70)
+time.sleep(3)
+fordulas(-80)
+time.sleep(3)
+fordulas(70)
+time.sleep(3)
+fordulas(-100)
