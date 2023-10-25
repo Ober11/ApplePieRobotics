@@ -67,10 +67,4 @@ def fordulas(target, multiplier=0.8):
         print(diff, target, g.angle)
     mt.stop()
 
-fordulas(70)
-time.sleep(3)
-fordulas(-80)
-time.sleep(3)
-fordulas(70)
-time.sleep(3)
-fordulas(-100)
+fordulas(90)
