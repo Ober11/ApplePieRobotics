@@ -5,7 +5,7 @@ import time
 mt = MoveTank("outA", "outD",)
 ms = MoveSteering("outA", "outD",)
 mr = LargeMotor("outA")
-ml = LargeMotor("outD")
+ml = LargeMotor("outD")0
 kr = MediumMotor("outB")
 kl = MediumMotor("outC")
 g = GyroSensor("in2")
