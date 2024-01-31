@@ -9,7 +9,7 @@ ml = LargeMotor("outD")
 kr = MediumMotor("outB")
 kl = MediumMotor("outC")
 g = GyroSensor("in2")
-c1 = ColorSensor("in1")
+#c1 = ColorSensor("in1")
 c2 = ColorSensor("in4")
 
 mt.on_for_seconds(100, 100, 30)
