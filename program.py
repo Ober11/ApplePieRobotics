@@ -166,7 +166,7 @@ def mk():
     hel(-30, -1250, 0)
     time.sleep(2)
     el(60, 1450, 0)
-    hel(-30, -700, 0)
+    hel(-30, -800, 0)
 
 def wb():
     #hangmixer
@@ -180,23 +180,20 @@ def wb():
 def szp():
     #nyomtató betolása
     g.reset()
-    el(60, 1100, 0, multiplier=0.3)
-    hel(-30, -400, 0)
+    el(60, 500, 0, multiplier=0.3)
     fordulas(-45,)
-    hel(-50, -550, -45)
     
     #színpad
-    g.reset()
     time.sleep(0.5)
-    el(60, 800, 0, multiplier=0.3, stop=False)
-    el(60, 485, 30, 0.3)
-    fordulas(-45, 0.5) 
-    el(30, 400, -45, multiplier=0.3,)
+    el(60, 300, -45, multiplier=0.3, stop=False)
+    el(60, 500, -15, 0.3)
+    fordulas(-90, 0.5) 
+    el(30, 400, -90, multiplier=0.3,)
     kr.on_for_degrees(-30, 300) 
     kl.on_for_degrees(-30, 700)
-    hel(-60, -19, -45, 1.5)
-    hel(-60, -750, 0)
-    hel(-100, -900, 45)
+    hel(-60, -55, 0, 1.5)
+    '''hel(-60, -750, -45)
+    hel(-100, -900, 0)'''
 
 def pft():
     #fényjáték
@@ -225,12 +222,11 @@ def pft():
     el(60, 500, -56)
     print("el3")
      
-#---- jelenleg nem használt kód ----    
+   
 def csirke():
     g.reset()
     el(50, 1000, 0)
     hel(-40, -1000, 0)
-#-----------------------------------
 
 valasztas = 0
 balra = 0
@@ -260,9 +256,11 @@ while menu == True:
         jobbra = "színpad"
     elif valasztas == 4:
         balra = "waterboard"
-        fo = "színpad"
+        fo = "csirke"
         jobbra = "torony"
     elif valasztas == 5:
+        fo = "színpad"
+    elif valasztas == 6:
         balra = "színpad"
         fo = "vége"
         jobbra = "exit"
@@ -274,39 +272,56 @@ while menu == True:
     print("------------------------------------")
     btn = Button()
     mongas = True
-    while mongas == True:
-        if btn.up == True:
-            print("a")
-            if valasztas == 0:
-                mongas = False
-                mhdt()
-                valasztas += 1 
-            elif valasztas == 1:
-                print("Program elinditva")
-                mongas = False
-                time.sleep(0.3)
-                valasztas += 1
-                wb()
-            elif valasztas == 2:
-                print("Program elinditva")
-                mongas = False
-                time.sleep(0.3)
-                valasztas += 1
-                pft()
-            elif valasztas == 3: 
-                print("Program elinditva")
-                mongas = False
-                time.sleep(0.3)
-                mk()
-                valasztas += 1
-            elif valasztas == 4: 
-                print("Program elinditva")
-                mongas = False
-                time.sleep(0.3)
-                valasztas += 1
-                szp()
-            elif valasztas == 5: 
-                print("Program elinditva")
-                mongas = False
-                menu=False
+    try:
+        while mongas == True:
+            if btn.enter == True:
+                print("a")
+                if valasztas == 0:
+                    mongas = False
+                    mhdt()
+                    valasztas += 1 
+                elif valasztas == 1:
+                    print("Program elinditva")
+                    mongas = False
+                    time.sleep(0.3)
+                    valasztas += 1
+                    wb()
+                elif valasztas == 2:
+                    print("Program elinditva")
+                    mongas = False
+                    time.sleep(0.3)
+                    valasztas += 1
+                    pft()
+                elif valasztas == 3: 
+                    print("Program elinditva")
+                    mongas = False
+                    time.sleep(0.3)
+                    mk()
+                    valasztas += 1
+                elif valasztas == 4: 
+                    print("Program elinditva")
+                    mongas = False
+                    time.sleep(0.3)
+                    valasztas += 1
+                    csirke()
+                elif valasztas == 5: 
+                    print("Program elinditva")
+                    mongas = False
+                    time.sleep(0.3)
+                    valasztas += 1
+                    szp()
+                elif valasztas == 6: 
+                    print("Program elinditva")
+                    mongas = False
+                    menu=False
+            if btn.right == True:
+                valasztas+=1
+                if valasztas > 6:
+                    valasztas = 1
+            if btn.left == True:
+                valasztas-=1
+                if valasztas < 1:
+                    valasztas = 6
+    except KeyboardInterrupt:
+        pass
     btn = None
