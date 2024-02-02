@@ -15,7 +15,7 @@ c2 = ColorSensor("in4")
 
 g.reset()
 
-def el(speed, megt, target=g.angle, multiplier = 0.8, brek = True, stop = True):
+def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     ml.position = 0
     mr.position = 0
     while (ml.position+mr.position)/2<megt:
@@ -29,10 +29,10 @@ def el(speed, megt, target=g.angle, multiplier = 0.8, brek = True, stop = True):
         print(remaining, g.angle, (ml.position+mr.position)/2<megt)
     if stop == True:
         print("Motors turning off") 
-        ms.off(brake=brek)
+        ms.off()
     return 0
 
-def hel(speed, megt, target=g.angle, multiplier =0.8, brek = True, stop=True):
+def hel(speed, megt, target=g.angle, multiplier =0.8, stop=True):
     ml.position = 0
     mr.position = 0
     while (ml.position+mr.position)/2>megt:
@@ -46,7 +46,7 @@ def hel(speed, megt, target=g.angle, multiplier =0.8, brek = True, stop=True):
         print(remaining, g.angle, (ml.position+mr.position)/2<megt)
     if stop == True:
         print("Motors turning off") 
-        ms.off(brake=brek)
+        ms.off()
     return 0
 
 def fordulas_with_timeout(target, multiplier=0.7, timeout=5):
@@ -93,10 +93,10 @@ def mhdt():
     # mozgókép három dimenziónális térben
     #   3d mozi
     g.reset()
-    el(50, 300)
+    el(50, 320)
     kr.on_for_degrees(-30, 450)
     time.sleep(0.2)
-    fordulas_with_timeout(-31, 0.7, 2.5)
+    fordulas_with_timeout(-31, 0.7, 1.75)
     kr.on_for_degrees(30, 600)
     fordulas(10)
     kr.on_for_degrees(-50, 200)
@@ -112,7 +112,7 @@ def mhdt():
     time.sleep(0.2)
     el(50, 230)
     fordulas(60)
-    hel(-10, -170, 60, 1.5)
+    hel(-10, -175, 60, 1.5)
     time.sleep(0.4)
     fordulas(60)
     el(45, 73, 60)
@@ -148,9 +148,9 @@ def mhdt():
     time.sleep(0.1)
     hel(-50, -150, 225)
     fordulas(180)
-    el(50, 800, 180)
-    fordulas(218)
-    el(40, 70, 218)
+    el(50, 850, 180)
+    fordulas(222)
+    el(40, 80, 222)
     time.sleep(0.2)
     kr.on_for_degrees(-30, 1200)
     hel(-30, -500, 180)
@@ -171,27 +171,27 @@ def mk():
 def wb():
     #hangmixer
     g.reset()
-    el(30, 630, 0, 0.5, brek=False, stop=False)
+    el(30, 630, 0, 0.5, stop=False)
     el(50, 200, 0.5)
     time.sleep(0.1)
     hel(-20           , -200, -0, 0.8, stop=False)
     hel(-60, -630)
 
 def szp():
-    #nyomtató betolása
+    #színpad
     g.reset()
-    el(60, 500, 0, multiplier=0.3)
+    el(60, 460, 0, multiplier=0.3)
     fordulas(-45,)
     
     #színpad
     time.sleep(0.5)
     el(60, 300, -45, multiplier=0.3, stop=False)
-    el(60, 500, -15, 0.3)
+    el(60, 580, -15, 0.3)
     fordulas(-90, 0.5) 
     el(30, 400, -90, multiplier=0.3,)
     kr.on_for_degrees(-30, 300) 
     kl.on_for_degrees(-30, 700)
-    hel(-60, -55, 0, 1.5)
+    hel(-60, -200, -90, 1.5)
     '''hel(-60, -750, -45)
     hel(-100, -900, 0)'''
 
@@ -200,7 +200,7 @@ def pft():
     g.reset()
     time.sleep(0.5)
     el(60, 1200, 0, stop=False)
-    el(30, 215, 0,)
+    el(30, 220, 0,)
     kl.on_for_rotations(-30, 3.75)
     #Masterpiece(Tm)
     hel(-30, -20, 0)
@@ -235,8 +235,8 @@ fo = 0
 menu = True
 while menu == True:
     if valasztas < 0:
-        valasztas = 5
-    elif valasztas > 5:
+        valasztas = 6
+    elif valasztas > 6:
         valasztas = 0
     if valasztas == 0:
         balra = "-"
@@ -296,8 +296,8 @@ while menu == True:
                     print("Program elinditva")
                     mongas = False
                     time.sleep(0.3)
-                    mk()
                     valasztas += 1
+                    mk()
                 elif valasztas == 4: 
                     print("Program elinditva")
                     mongas = False
@@ -316,12 +316,20 @@ while menu == True:
                     menu=False
             if btn.right == True:
                 valasztas+=1
-                if valasztas > 6:
-                    valasztas = 1
+                mongas=False
+                time.sleep(0.2)
             if btn.left == True:
                 valasztas-=1
-                if valasztas < 1:
-                    valasztas = 6
+                mongas=False
+                time.sleep(0.2)
     except KeyboardInterrupt:
+        mt.off(brake=False)
+        print("a")
+        ms.off(brake=False)
+        print("b")
+        kl.off(brake=False)
+        print("c")
+        kr.off(brake=False)
+        print("d")
         pass
     btn = None
