@@ -139,7 +139,7 @@ def mhdt():
     el(40, 40, 0)
     kr.on_for_degrees(-30, 975)
     time.sleep(0.2)
-    kr.on_for_degrees(50, 215)
+    kr.on_for_degrees(50, 285)
     
     #mozgókamera karjának felnyitása
     fordulas(180)
