@@ -24,14 +24,16 @@ def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     while remfok > 0:
         megtfok = (ml.position+mr.position)/2
         remfok = megt - megtfok
+        if megtfok < 51:
+            speed = max(megtfok * (originalspeed*0.02), 5)
         remaining = target-g.angle
         correction = remaining*multiplier
         if correction > 100:
             correction = 100
         elif correction < -100:
             correction = -100
-        if remfok < 100:
-            speed = max(originalspeed*(remfok*0.01), 5)
+        if remfok < 200:
+            speed = max(originalspeed*(remfok*0.005), 5)
             
         ms.on(correction, speed)
         print(remaining, g.angle, (ml.position+mr.position)/2<megt)
