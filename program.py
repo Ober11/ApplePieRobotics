@@ -30,7 +30,7 @@ def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     if stop == True:
         print("Motors turning off") 
         ms.off()
-    return 0
+    return 0 
 
 def hel(speed, megt, target=g.angle, multiplier =0.8, stop=True):
     ml.position = 0
@@ -93,7 +93,7 @@ def mhdt():
     # mozgókép három dimenziónális térben
     #   3d mozi
     g.reset()
-    el(50, 320)
+    el(50, 325)
     kr.on_for_degrees(-30, 450)
     time.sleep(0.2)
     fordulas_with_timeout(-31, 0.7, 1.75)
@@ -143,14 +143,14 @@ def mhdt():
     
     #mozgókamera karjának felnyitása
     fordulas(180)
-    el(30, 290, 180)
+    el(30, 350, 220)
     kl.on_for_degrees(30, 520)
     time.sleep(0.1)
-    hel(-50, -150, 225)
+    hel(-50, -240, 225)
     fordulas(180)
-    el(50, 840, 180)
+    el(50, 850, 180)
     fordulas(224)
-    el(40, 90, 224)
+    el(40, 120, 224)
     time.sleep(0.2)
     kr.on_for_degrees(-30, 1200)
     hel(-30, -500, 180)
@@ -225,7 +225,7 @@ def pft():
    
 def csirke():
     g.reset()
-    el(50, 1000, 0)
+    el(50, 1000, 0) 
     hel(-40, -1000, 0)
 
 valasztas = 0
@@ -333,3 +333,4 @@ while menu == True:
         print("d")
         pass
     btn = None
+
