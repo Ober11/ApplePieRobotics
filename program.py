@@ -241,7 +241,6 @@ def csirke():
     el(50, 470)
     kl.on_for_degrees(100, 4000)
     hel(-30, -1000)
-    
 
 valasztas = 0
 balra = 0
