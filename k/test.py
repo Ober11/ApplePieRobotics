@@ -24,16 +24,17 @@ def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     while remfok > 0:
         megtfok = (ml.position+mr.position)/2
         remfok = megt - megtfok
-        if megtfok < 51:
-            speed = max(megtfok * (originalspeed*0.02), 5)
+        if megtfok < 50:
+            speed = max(megtfok * (originalspeed*0.02), 10)
         remaining = target-g.angle
         correction = remaining*multiplier
         if correction > 100:
             correction = 100
         elif correction < -100:
             correction = -100
-        if remfok < 200:
-            speed = max(originalspeed*(remfok*0.005), 5)
+        if stop == True:
+            if remfok < 100:
+                speed = max(originalspeed*(remfok*0.01), 10)
             
         ms.on(correction, speed)
         print(remaining, g.angle, (ml.position+mr.position)/2<megt)
@@ -80,6 +81,7 @@ def fordulas_with_timeout(target, multiplier=0.7, timeout=5):
 
     mt.stop()
     time.sleep(0.3)
+    
 def fordulas(target, multiplier=0.7):
     if target < 0:
         target=target*-1
@@ -98,5 +100,3 @@ def fordulas(target, multiplier=0.7):
         print(diff, target, g.angle)
     mt.stop()
     time.sleep(0.3)
-
-el(60, 1000)

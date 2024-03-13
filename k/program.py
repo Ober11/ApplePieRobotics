@@ -141,14 +141,14 @@ def mhdt():
     
     #   immerzív tapasztaltat
     time.sleep(0.3)
-    hel(-60, -325, 45)
-    fordulas(0)
+    hel(-60, -325, 30)
+    fordulas_with_timeout(0, timeout=4)
     kl.on_for_degrees(30, 520)
     time.sleep(0.1)
     hel(-50, -80, 0)
     hel(-50, -350, 60)
     fordulas(0, 0.6)
-    el(40, 40, 0)
+    el(40, 80, 0)
     kr.on_for_degrees(-30, 975)
     time.sleep(0.2)
     kr.on_for_degrees(50, 285)
@@ -167,7 +167,7 @@ def mhdt():
     kr.on_for_degrees(-30, 1200)
     hel(-30, -500, 180)
     kr.on_for_degrees(30, 600)
-    el(100, 1400, 110)
+    el(100, 1400, 112)
     
 def mk():
     #mozgó kamera ellökése
@@ -242,8 +242,20 @@ def csirke():
     fordulas(0, 0.6)
     el(70, 470)
     kl.on_for_degrees(100, 4000)
-    hel(-60, -1000)
+    hel(-30, -400, stop=False)
+    hel(-60, -600)
 
+gright = False
+while gright == False:
+    giro1 = g.angle()
+    time.sleep(1)
+    giro2 = g.angle()
+    if giro1 != giro2:
+        g.calibrate()
+        time.sleep(2)
+        gright=False
+    else:
+        gright = True
 valasztas = 0
 balra = 0
 jobbra = 0
