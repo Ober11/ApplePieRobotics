@@ -14,10 +14,9 @@ phmotor = MediumMotor("outB")
 speaker = Sound()
 
 #1:1.5 speed/ 1.5:1 fok arány ph:input/output
-phmotor.on_for_degrees(11, 300, block=False)
-inputmotor.on_for_degrees(16.5, 300, block=False)
-outputmotor.on_for_degrees(16.5, 300)
+
+
 time.sleep(2)
-phmotor.on_for_degrees(30, -300)
+phmotor.on_for_degrees(30, -950)
 
 

@@ -3,6 +3,7 @@ from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2.sound import *
 import time
+import math
 button1 = TouchSensor("in1")
 button2 = TouchSensor("in4")
 button3 = TouchSensor("in3")
@@ -19,6 +20,25 @@ class Pen():
     print("a")
     def updown():
         pvmotor.on_for_degrees(80, 180)
+    def MovePenVector(direction, distance):
+        direction_rad = math.radians(direction)
+
+        delta_x = distance * math.cos(direction_rad)
+        delta_y = distance * math.sin(direction_rad)
+
+        print(delta_x, delta_y)
+        if delta_y != 0:
+            ratio = delta_x / delta_y
+            print("Ratio of delta_x / delta_y:", ratio)
+        scaling_factor = 1.5 / ratio
+        phmotor.on_for_degrees(30*scaling_factor, delta_y, block=False)
+        inputmotor.on_for_degrees(-30*scaling_factor, delta_x, block=False)
+        outputmotor.on_for_degrees(30*scaling_factor, delta_x)
+    
+    def reset():
+        while phmotor.position != 0:
+            phmotor.on(-10)
+        phmotor.off()
         
 class Letters():
     print("a")
@@ -75,7 +95,7 @@ class Letters():
             Letters.Write.y()
         elif morse == [1, 1, 0, 0]:
             Letters.Write.z()
-        elif morse == [0, 0, 0, 0, 0]:
+        elif morse == [0, 0, 0, 0, 0] or []:
             Letters.Write.space()
         
     class Write():
@@ -127,15 +147,21 @@ class Letters():
         def w():
             print("w")
         def x():
+            
+            Pen.updown()
+            Pen.MovePenVector(45, 500)
+            Pen.updown()
             print("x")
+            phmotor.reset()
         def y():
             print("y")
         def z():
             print("z")
         def space():
             print("space")
-        
-   
+
+phmotor.position = 0
+phstartpos = phmotor.position
 mode = "morse"
 cs.mode = 'COL-AMBIENT'
 morse = []
@@ -186,6 +212,7 @@ while True:
         Letters.Check(morse)
         if mode == "morse":
                 pass
+        time.sleep(5)
         inputmotor.on_for_degrees(50, -85, block=False)
         outputmotor.on_for_degrees(50, 85)
         inputmotor.on_for_degrees(20, 30, block=False)
