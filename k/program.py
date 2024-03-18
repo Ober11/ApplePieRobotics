@@ -233,8 +233,8 @@ def pft():
     el(60, 700, -96, stop=False)
     el(60, 500, -56)
     print("el3")
-     
-   
+
+
 def csirke():
     g.reset()
     el(60, 640, 0)
@@ -245,17 +245,9 @@ def csirke():
     hel(-30, -400, stop=False)
     hel(-60, -600)
 
-gright = False
-while gright == False:
-    giro1 = g.angle()
-    time.sleep(1)
-    giro2 = g.angle()
-    if giro1 != giro2:
-        g.calibrate()
-        time.sleep(2)
-        gright=False
-    else:
-        gright = True
+
+
+
 valasztas = 0
 balra = 0
 jobbra = 0
