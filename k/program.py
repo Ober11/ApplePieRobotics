@@ -17,6 +17,9 @@ c2 = ColorSensor("in4")
 
 g.reset()
 
+class Nagivation():
+    def UpdateCordinates():
+        print("a")
 def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     ml.position = 0
     mr.position = 0
@@ -246,7 +249,6 @@ def csirke():
     kl.on_for_degrees(100, 4000)
     hel(-30, -400, stop=False)
     hel(-60, -600)
-
 
 
 
