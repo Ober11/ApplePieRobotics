@@ -3,6 +3,8 @@ from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2.button import *
 import time
+import sys
+from threading import Thread
 mt = MoveTank("outA", "outD",)
 ms = MoveSteering("outA", "outD",)
 mr = LargeMotor("outA")
