@@ -5,6 +5,7 @@ from ev3dev2.button import *
 import time
 import sys
 from threading import Thread
+import math
 mt = MoveTank("outA", "outD",)
 ms = MoveSteering("outA", "outD",)
 mr = LargeMotor("outA")
@@ -16,13 +17,32 @@ g = GyroSensor("in2")
 c2 = ColorSensor("in4")
 
 g.reset()
+time.sleep(0.2)
+global x, y, rc1, rc2, rc3, rc4, rc5, rc6, rc7, rc8
+firstnavloop = True
 
-class Nagivation():
-    def UpdateCordinates():
+class Navigation():
+    def CordinateUpdates():
         print("a")
+        while True:
+            if firstnavloop == True:
+                motorpositionstart = [ml.position, mr.position]
+                firstnavloop = False
+            elif firstnavloop == False:
+                motorpositionstart = nextstartposition
+            motorpositionfinish = [ml.position, mr.position]
+            robotangle = g.angle()
+            nextstartposition = [ml.position, mr.position]
+            motorpositionchange = motorpositionfinish-motorpositionstart
+            
+            xcordinatechange = motorpositionchange * math.sin(robotangle)
+            ycordinatechange = motorpositionchange * math.cos(robotangle)
+
+            x = x + xcordinatechange
+            y = y + ycordinatechange
+            
 def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
-    ml.position = 0
-    mr.position = 0
+    megt = (ml.position+mr.position)/2 + megt
     originalspeed = speed
     megtfok = (ml.position+mr.position)/2
     remfok = megt - megtfok
@@ -49,8 +69,7 @@ def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     return 0 
 
 def hel(speed, megt, target=g.angle, multiplier =0.8, stop=True):
-    ml.position = 0
-    mr.position = 0
+    megt = (ml.position+mr.position)/2 + megt
     while (ml.position+mr.position)/2>megt:
         remaining = target-g.angle
         correction = remaining*multiplier
