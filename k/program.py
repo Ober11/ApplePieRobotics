@@ -18,17 +18,17 @@ c2 = ColorSensor("in4")
 
 g.reset()
 time.sleep(0.2)
-global x, y, rc1, rc2, rc3, rc4, rc5, rc6, rc7, rc8
+global x, y, rc1, rc2, rc3, rc4, rc5, rc6, rc7, rc8, nextstartposition
 firstnavloop = True
 
 class Navigation():
     def CordinateUpdates():
         print("a")
         while True:
-            if firstnavloop == True:
+            if firstnavloop:
                 motorpositionstart = [ml.position, mr.position]
                 firstnavloop = False
-            elif firstnavloop == False:
+            elif not firstnavloop:
                 motorpositionstart = nextstartposition
             motorpositionfinish = [ml.position, mr.position]
             robotangle = g.angle()
@@ -38,8 +38,10 @@ class Navigation():
             xcordinatechange = motorpositionchange * math.sin(robotangle)
             ycordinatechange = motorpositionchange * math.cos(robotangle)
 
-            x = x + xcordinatechange
-            y = y + ycordinatechange
+            x += xcordinatechange
+            y += ycordinatechange
+
+            
             
 def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     megt = (ml.position+mr.position)/2 + megt
@@ -270,7 +272,10 @@ def csirke():
     hel(-60, -600)
 
 
-
+x=0
+y=0
+navt = Thread(target=Navigation.CordinateUpdates())
+navt.start()
 valasztas = 0
 balra = 0
 jobbra = 0
