@@ -40,8 +40,6 @@ class Navigation():
 
             x += xcordinatechange
             y += ycordinatechange
-
-            
             
 def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     megt = (ml.position+mr.position)/2 + megt
