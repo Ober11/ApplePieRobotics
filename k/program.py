@@ -40,6 +40,19 @@ class Navigation():
 
             x += xcordinatechange
             y += ycordinatechange
+    def MoveTo(X, Y):
+        print("a")
+        start_point = [x, y]
+        end_point = [X, Y]
+
+        delta_x = end_point[0] - start_point[0]
+        delta_y = end_point[1] - start_point[1]
+
+        angle_radians = math.atan2(delta_y, delta_x)
+        angle_degrees = math.degrees(angle_radians)
+        
+        
+        
             
 def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     megt = (ml.position+mr.position)/2 + megt
