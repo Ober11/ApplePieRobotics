@@ -17,6 +17,6 @@ speaker = Sound()
 
 
 time.sleep(2)
-phmotor.on_for_degrees(30, -500)
+phmotor.on_for_degrees(30, -950)
 
 
