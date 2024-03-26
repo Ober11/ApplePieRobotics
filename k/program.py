@@ -55,8 +55,9 @@ class Navigation():
         fordulas(angle_degrees)
         el(30, distance, angle_degrees)
         fordulas(enddegrees+90)
+
+
         
-            
 def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
     megt = (ml.position+mr.position)/2 + megt
     originalspeed = speed
