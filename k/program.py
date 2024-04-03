@@ -4,6 +4,7 @@ from ev3dev2.sensor.lego import *
 from ev3dev2.button import *
 import time
 import sys
+import resource
 from threading import Thread
 import math
 mt = MoveTank("outA", "outD",)
@@ -27,6 +28,11 @@ blocked = []
 # 1 cordinate unit = 0.0508 cm
 
 
+def memory_limit():
+    rsrc = resource.RLIMIT_DATA
+    soft, hard = resource.getrlimit(rsrc)
+    soft /= 2
+    resource.setrlimit(rsrc, (soft, hard))
 class Navigation():
     def GetNumberInCordinates(centimeters):
         cordinates = centimeters / 0.0508
@@ -59,18 +65,23 @@ class Navigation():
             robotside7 = [y+Navigation.GetNumberInCordinates(-11.14)+attachmentysizechangeminus, x+Navigation.GetNumberInCordinates(-5.7)+attachmentxsizechangeminus]
             robotside8 = [y, x+Navigation.GetNumberInCordinates(-5.7)+attachmentxsizechangeminus]   
 
-    def jump_point_search(start=None, end=[]):
+
+    def dist(start, end):
+        return math.sqrt((start[0] - end[0])**2 + (start[1] - end[1])**2)
+    def jump_point_search(start=None, end=[], enddegrees=0):
         def is_blocked(point, blocked):
             return point in blocked
         def get_next_point(point, angle, distance=1):
             return [point[0] + distance * math.cos(angle), point[1] + distance * math.sin(angle)]
+        global x, y
         if start == None:
             start = [x, y]
         current = start
+        print(len(end), len(start))
         delta_x = end[0] - start[0]
         delta_y = end[1] - start[1]
-        
-        distance = math.dist(start, end)
+        finishing_degrees = []
+        distance = Navigation.dist(start, end)
         angle_radians = math.atan2(delta_y, delta_x)
         angle_degrees = math.degrees(angle_radians)
         
@@ -91,9 +102,9 @@ class Navigation():
                 jump_start_list.append(current)
                 cost_efficient = True
                 while cost_efficient == True or current[0]+1 in blocked:
-                    dist1 = math.dist(current, end)
+                    dist1 = Navigation.dist(current, end)
                     current[0] += 1
-                    dist2 = math.dist(current, end)
+                    dist2 = Navigation.dist(current, end)
                     if dist2 > dist1:
                         cost_efficient = False
                 if angle_degrees > 0:
@@ -103,26 +114,27 @@ class Navigation():
                 cost_efficient = True
                 if secondary_direction == "up":
                     while cost_efficient == True or current[1]+1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[1] += 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
                 elif secondary_direction == "down":
                     while cost_efficient == True or current[1]-1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[1] -= 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
-                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                 
-                pointdistance = math.dist(start, end)
+                pointdistance = Navigation.dist(start, end)
                 sec_angle_radians = math.atan2(change_y, change_x)
                 sec_angle_degrees = math.degrees(angle_radians)
+                finishing_degrees.append(sec_angle_degrees)
                 
                 checkstart = jump_start_list[-1]
                 checkprogress = checkstart
@@ -138,12 +150,14 @@ class Navigation():
                             jump_finish_list.pop()
                             current[1]-20
                             jump_finish_list.append(current)
-                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                            change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                             
-                            pointdistance = math.dist(start, end)
+                            finishing_degrees.pop()
+                            pointdistance = Navigation.dist(start, end)
                             sec_angle_radians = math.atan2(change_y, change_x)
                             sec_angle_degrees = math.degrees(angle_radians)
+                            finishing_degrees.append(sec_angle_degrees)
                             
                             checkstart = jump_start_list[-1]
                             checkprogress = checkstart
@@ -163,12 +177,14 @@ class Navigation():
                                 jump_finish_list.pop()
                                 current[1]+20
                                 jump_finish_list.append(current)
-                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                                 
-                                pointdistance = math.dist(start, end)
+                                finishing_degrees.pop()
+                                pointdistance = Navigation.dist(start, end)
                                 sec_angle_radians = math.atan2(change_y, change_x)
                                 sec_angle_degrees = math.degrees(angle_radians)
+                                finishing_degrees.append(sec_angle_degrees)
                                 
                                 checkstart = jump_start_list[-1]
                                 checkprogress = checkstart
@@ -187,9 +203,9 @@ class Navigation():
                 jump_start_list.append(current)
                 cost_efficient = True
                 while cost_efficient == True or current[1]+1 in blocked:
-                    dist1 = math.dist(current, end)
+                    dist1 = Navigation.dist(current, end)
                     current[1] += 1
-                    dist2 = math.dist(current, end)
+                    dist2 = Navigation.dist(current, end)
                     if dist2 > dist1:
                         cost_efficient = False
                 if angle_degrees > -90 and angle_degrees < 90:
@@ -199,26 +215,27 @@ class Navigation():
                 cost_efficient = True
                 if secondary_direction == "right":
                     while cost_efficient == True or current[0]+1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[0] += 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
                 elif secondary_direction == "left":
                     while cost_efficient == True or current[0]-1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[0] -= 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
-                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                 
-                pointdistance = math.dist(start, end)
+                pointdistance = Navigation.dist(start, end)
                 sec_angle_radians = math.atan2(change_y, change_x)
                 sec_angle_degrees = math.degrees(angle_radians)
+                finishing_degrees.append(sec_angle_degrees)
                 
                 checkstart = jump_start_list[-1]
                 checkprogress = checkstart
@@ -234,12 +251,14 @@ class Navigation():
                             jump_finish_list.pop()
                             current[0]-20
                             jump_finish_list.append(current)
-                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                            change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                             
-                            pointdistance = math.dist(start, end)
+                            finishing_degrees.pop()
+                            pointdistance = Navigation.dist(start, end)
                             sec_angle_radians = math.atan2(change_y, change_x)
                             sec_angle_degrees = math.degrees(angle_radians)
+                            finishing_degrees.append(sec_angle_degrees)
                             
                             checkstart = jump_start_list[-1]
                             checkprogress = checkstart
@@ -259,12 +278,14 @@ class Navigation():
                                 jump_finish_list.pop()
                                 current[0]+20
                                 jump_finish_list.append(current)
-                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                                 
-                                pointdistance = math.dist(start, end)
+                                finishing_degrees.pop()
+                                pointdistance = Navigation.dist(start, end)
                                 sec_angle_radians = math.atan2(change_y, change_x)
                                 sec_angle_degrees = math.degrees(angle_radians)
+                                finishing_degrees.append(sec_angle_degrees)
                                 
                                 checkstart = jump_start_list[-1]
                                 checkprogress = checkstart
@@ -283,9 +304,9 @@ class Navigation():
                 jump_start_list.append(current)
                 cost_efficient = True
                 while cost_efficient == True or current[0]-1 in blocked:
-                    dist1 = math.dist(current, end)
+                    dist1 = Navigation.dist(current, end)
                     current[0] -= 1
-                    dist2 = math.dist(current, end)
+                    dist2 = Navigation.dist(current, end)
                     if dist2 > dist1:
                         cost_efficient = False
                 if angle_degrees > 0:
@@ -295,26 +316,27 @@ class Navigation():
                 cost_efficient = True
                 if secondary_direction == "up":
                     while cost_efficient == True or current[1]+1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[1] += 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
                 elif secondary_direction == "down":
                     while cost_efficient == True or current[1]-1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[1] -= 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
-                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                 
-                pointdistance = math.dist(start, end)
+                pointdistance = Navigation.dist(start, end)
                 sec_angle_radians = math.atan2(change_y, change_x)
                 sec_angle_degrees = math.degrees(angle_radians)
+                finishing_degrees.append(sec_angle_degrees)
                 
                 checkstart = jump_start_list[-1]
                 checkprogress = checkstart
@@ -330,12 +352,14 @@ class Navigation():
                             jump_finish_list.pop()
                             current[1]-20
                             jump_finish_list.append(current)
-                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                            change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                             
-                            pointdistance = math.dist(start, end)
+                            finishing_degrees.pop()
+                            pointdistance = Navigation.dist(start, end)
                             sec_angle_radians = math.atan2(change_y, change_x)
                             sec_angle_degrees = math.degrees(angle_radians)
+                            finishing_degrees.append(sec_angle_degrees)
                             
                             checkstart = jump_start_list[-1]
                             checkprogress = checkstart
@@ -355,12 +379,14 @@ class Navigation():
                                 jump_finish_list.pop()
                                 current[1]+20
                                 jump_finish_list.append(current)
-                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                                 
-                                pointdistance = math.dist(start, end)
+                                finishing_degrees.pop()
+                                pointdistance = Navigation.dist(start, end)
                                 sec_angle_radians = math.atan2(change_y, change_x)
                                 sec_angle_degrees = math.degrees(angle_radians)
+                                finishing_degrees.append(sec_angle_degrees)
                                 
                                 checkstart = jump_start_list[-1]
                                 checkprogress = checkstart
@@ -379,9 +405,9 @@ class Navigation():
                 jump_start_list.append(current)
                 cost_efficient = True
                 while cost_efficient == True or current[1]-1 in blocked:
-                    dist1 = math.dist(current, end)
+                    dist1 = Navigation.dist(current, end)
                     current[1] -= 1
-                    dist2 = math.dist(current, end)
+                    dist2 = Navigation.dist(current, end)
                     if dist2 > dist1:
                         cost_efficient = False
                 if angle_degrees > -90 and angle_degrees < 90:
@@ -391,26 +417,27 @@ class Navigation():
                 cost_efficient = True
                 if secondary_direction == "right":
                     while cost_efficient == True or current[0]+1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[0] += 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
                 elif secondary_direction == "left":
                     while cost_efficient == True or current[0]-1 in blocked or current == end:
-                        dist1 = math.dist(current, end)
+                        dist1 = Navigation.dist(current, end)
                         current[0] -= 1
-                        dist2 = math.dist(current, end)
+                        dist2 = Navigation.dist(current, end)
                         if dist2 > dist1:
                             cost_efficient = False
                     jump_finish_list.append(current)
-                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                 
-                pointdistance = math.dist(start, end)
+                pointdistance = Navigation.dist(start, end)
                 sec_angle_radians = math.atan2(change_y, change_x)
                 sec_angle_degrees = math.degrees(angle_radians)
+                finishing_degrees.append(sec_angle_degrees)
                 
                 checkstart = jump_start_list[-1]
                 checkprogress = checkstart
@@ -426,12 +453,14 @@ class Navigation():
                             jump_finish_list.pop()
                             current[0]-20
                             jump_finish_list.append(current)
-                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                            change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                             
-                            pointdistance = math.dist(start, end)
+                            finishing_degrees.pop()
+                            pointdistance = Navigation.dist(start, end)
                             sec_angle_radians = math.atan2(change_y, change_x)
                             sec_angle_degrees = math.degrees(angle_radians)
+                            finishing_degrees.append(sec_angle_degrees)
                             
                             checkstart = jump_start_list[-1]
                             checkprogress = checkstart
@@ -451,12 +480,14 @@ class Navigation():
                                 jump_finish_list.pop()
                                 current[0]+20
                                 jump_finish_list.append(current)
-                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
-                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                change_x = jump_finish_list[-1][0] - jump_start_list[-1][0]
+                                change_y = jump_finish_list[-1][1] - jump_start_list[-1][1]
                                 
-                                pointdistance = math.dist(start, end)
+                                finishing_degrees.pop()
+                                pointdistance = Navigation.dist(start, end)
                                 sec_angle_radians = math.atan2(change_y, change_x)
                                 sec_angle_degrees = math.degrees(angle_radians)
+                                finishing_degrees.append(sec_angle_degrees)
                                 
                                 checkstart = jump_start_list[-1]
                                 checkprogress = checkstart
@@ -471,7 +502,16 @@ class Navigation():
                                 if still_blocked == False:
                                     blockonpath = False
                                 Navigation.jump_point_search(current, end)
-
+        if len(finishing_degrees) == 1:
+            finishing_degrees.clear
+            finishing_degrees.append(enddegrees)
+        elif len(finishing_degrees) == 0:
+            pass
+        else:
+            finishing_degrees.remove
+            finishing_degrees.append(enddegrees)
+        for _ in range(len(jump_finish_list)):
+            Navigation.MoveTo(jump_finish_list[_-1][0], jump_finish_list[_-1][1], )
     def MoveTo(X, Y, enddegrees, force=False):
         print("a")
         start_point = [x, y]
@@ -480,7 +520,7 @@ class Navigation():
         delta_x = end_point[0] - start_point[0]
         delta_y = end_point[1] - start_point[1]
         
-        distance = math.dist(start_point, end_point)
+        distance = Navigation.dist(start_point, end_point)
         angle_radians = math.atan2(delta_y, delta_x)
         angle_degrees = math.degrees(angle_radians)
         
@@ -579,6 +619,9 @@ def fordulas(target, multiplier=0.7):
     mt.stop()
     time.sleep(0.3)
 
+
+def navtest():
+    Navigation.jump_point_search(None, [300, 200])
 def mhdt():
     # mozgókép három dimenziónális térben
     #   3d mozi
@@ -724,6 +767,7 @@ def csirke():
     hel(-60, -600)
 
 
+memory_limit()
 x=0
 y=0
 navt = Thread(target=Navigation.CordinateUpdates)
@@ -778,7 +822,7 @@ while menu == True:
                 print("a")
                 if valasztas == 0:
                     mongas = False
-                    mhdt()
+                    navtest()
                     valasztas += 1 
                 elif valasztas == 1:
                     print("Program elinditva")
