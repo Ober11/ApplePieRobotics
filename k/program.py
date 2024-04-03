@@ -18,29 +18,461 @@ c2 = ColorSensor("in4")
 
 g.reset()
 time.sleep(0.2)
-global x, y, rc1, rc2, rc3, rc4, rc5, rc6, rc7, rc8, nextstartposition
+global blocked
+global x, y, robotside1, robotside2, robotside3, robotside4, robotside5, robotside6, robotside7, robotside8, nextstartposition, attachmentxsizechangeplus, attachmentxsizechangeminus, attachmentysizechangeplus, attachmentysizechangeminus, firstnavloop
 firstnavloop = True
+attachmentxsizechangeplus, attachmentxsizechangeminus, attachmentysizechangeplus, attachmentysizechangeminus = 0, 0, 0, 0
+blocked = []
+# 100 cordinate units == 5.08 cm
+# 1 cordinate unit = 0.0508 cm
+
 
 class Navigation():
+    def GetNumberInCordinates(centimeters):
+        cordinates = centimeters / 0.0508
+        return cordinates
     def CordinateUpdates():
+        global x, y, robotside1, robotside2, robotside3, robotside4, robotside5, robotside6, robotside7, robotside8, nextstartposition, firstnavloop
         print("a")
         while True:
             if firstnavloop:
-                motorpositionstart = [ml.position, mr.position]
+                motorpositionstart = (ml.position*mr.position)/2
                 firstnavloop = False
             elif not firstnavloop:
                 motorpositionstart = nextstartposition
-            motorpositionfinish = [ml.position, mr.position]
-            robotangle = g.angle()
-            nextstartposition = [ml.position, mr.position]
-            motorpositionchange = motorpositionfinish-motorpositionstart
-            
+            motorpositionfinish = (ml.position*mr.position)/2
+            robotangle = g.angle
+            nextstartposition = (ml.position*mr.position)/2
+            motorpositionchange = motorpositionfinish - motorpositionstart
             xcordinatechange = motorpositionchange * math.sin(robotangle)
             ycordinatechange = motorpositionchange * math.cos(robotangle)
 
             x += xcordinatechange
             y += ycordinatechange
-    def MoveTo(X, Y, enddegrees):
+            
+            robotside1 = [y+Navigation.GetNumberInCordinates(6.84)+attachmentysizechangeplus, x+Navigation.GetNumberInCordinates(-5.7)+attachmentxsizechangeminus]
+            robotside2 = [y+Navigation.GetNumberInCordinates(6.84)+attachmentysizechangeplus, x]
+            robotside3 = [y+Navigation.GetNumberInCordinates(6.84)+attachmentysizechangeplus, x+Navigation.GetNumberInCordinates(5.7), attachmentxsizechangeplus]
+            robotside4 = [y, x+Navigation.GetNumberInCordinates(5.7)+attachmentxsizechangeplus]
+            robotside5 = [y+Navigation.GetNumberInCordinates(-11.14)+attachmentysizechangeminus, x+Navigation.GetNumberInCordinates(5.7)+attachmentxsizechangeplus] 
+            robotside6 = [y+Navigation.GetNumberInCordinates(-11.14), x]
+            robotside7 = [y+Navigation.GetNumberInCordinates(-11.14)+attachmentysizechangeminus, x+Navigation.GetNumberInCordinates(-5.7)+attachmentxsizechangeminus]
+            robotside8 = [y, x+Navigation.GetNumberInCordinates(-5.7)+attachmentxsizechangeminus]   
+
+    def jump_point_search(start=None, end=[]):
+        def is_blocked(point, blocked):
+            return point in blocked
+        def get_next_point(point, angle, distance=1):
+            return [point[0] + distance * math.cos(angle), point[1] + distance * math.sin(angle)]
+        if start == None:
+            start = [x, y]
+        current = start
+        delta_x = end[0] - start[0]
+        delta_y = end[1] - start[1]
+        
+        distance = math.dist(start, end)
+        angle_radians = math.atan2(delta_y, delta_x)
+        angle_degrees = math.degrees(angle_radians)
+        
+        jump_start_list = []
+        jump_finish_list = []
+        
+        if angle_degrees > -45 or angle_degrees < 45:
+            direction = "right"
+        elif angle_degrees > 45 or angle_degrees < 135:
+            direction = "up"
+        elif angle_degrees > 135 or angle_degrees < -135:
+            direction = "left"
+        elif angle_degrees > -135 or angle_degrees < -45:
+            direction = "down"
+        
+        while current != end:
+            if direction == "right":
+                jump_start_list.append(current)
+                cost_efficient = True
+                while cost_efficient == True or current[0]+1 in blocked:
+                    dist1 = math.dist(current, end)
+                    current[0] += 1
+                    dist2 = math.dist(current, end)
+                    if dist2 > dist1:
+                        cost_efficient = False
+                if angle_degrees > 0:
+                    secondary_direction = "up"
+                elif angle_degrees < 0:
+                    secondary_direction = "down"
+                cost_efficient = True
+                if secondary_direction == "up":
+                    while cost_efficient == True or current[1]+1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[1] += 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                elif secondary_direction == "down":
+                    while cost_efficient == True or current[1]-1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[1] -= 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                
+                pointdistance = math.dist(start, end)
+                sec_angle_radians = math.atan2(change_y, change_x)
+                sec_angle_degrees = math.degrees(angle_radians)
+                
+                checkstart = jump_start_list[-1]
+                checkprogress = checkstart
+                checkfinish = jump_finish_list[-1]
+                blockonpath = False
+                while checkprogress != checkfinish:
+                    get_next_point(current, sec_angle_degrees)
+                    if is_blocked(current, blocked):
+                        blockonpath = True
+                if blockonpath == True:
+                    if secondary_direction == "up":
+                        while still_blocked == True:
+                            jump_finish_list.pop()
+                            current[1]-20
+                            jump_finish_list.append(current)
+                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            
+                            pointdistance = math.dist(start, end)
+                            sec_angle_radians = math.atan2(change_y, change_x)
+                            sec_angle_degrees = math.degrees(angle_radians)
+                            
+                            checkstart = jump_start_list[-1]
+                            checkprogress = checkstart
+                            checkfinish = jump_finish_list[-1]
+                            blockonpath = False
+                            still_blocked = False
+                            while checkprogress != checkfinish:
+                                get_next_point(current, sec_angle_degrees)
+                                if is_blocked(current, blocked):
+                                    still_blocked = True
+                                    blockonpath = True
+                            if still_blocked == False:
+                                blockonpath = False
+                            Navigation.jump_point_search(current, end)
+                    if secondary_direction == "down":
+                        while still_blocked == True:
+                                jump_finish_list.pop()
+                                current[1]+20
+                                jump_finish_list.append(current)
+                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                
+                                pointdistance = math.dist(start, end)
+                                sec_angle_radians = math.atan2(change_y, change_x)
+                                sec_angle_degrees = math.degrees(angle_radians)
+                                
+                                checkstart = jump_start_list[-1]
+                                checkprogress = checkstart
+                                checkfinish = jump_finish_list[-1]
+                                blockonpath = False
+                                still_blocked = False
+                                while checkprogress != checkfinish:
+                                    get_next_point(current, sec_angle_degrees)
+                                    if is_blocked(current, blocked):
+                                        still_blocked = True
+                                        blockonpath = True
+                                if still_blocked == False:
+                                    blockonpath = False
+                                Navigation.jump_point_search(current, end)
+            elif direction == "up":
+                jump_start_list.append(current)
+                cost_efficient = True
+                while cost_efficient == True or current[1]+1 in blocked:
+                    dist1 = math.dist(current, end)
+                    current[1] += 1
+                    dist2 = math.dist(current, end)
+                    if dist2 > dist1:
+                        cost_efficient = False
+                if angle_degrees > -90 and angle_degrees < 90:
+                    secondary_direction = "right"
+                elif angle_degrees < -90 or angle_degrees > 90:
+                    secondary_direction = "left"
+                cost_efficient = True
+                if secondary_direction == "right":
+                    while cost_efficient == True or current[0]+1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[0] += 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                elif secondary_direction == "left":
+                    while cost_efficient == True or current[0]-1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[0] -= 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                
+                pointdistance = math.dist(start, end)
+                sec_angle_radians = math.atan2(change_y, change_x)
+                sec_angle_degrees = math.degrees(angle_radians)
+                
+                checkstart = jump_start_list[-1]
+                checkprogress = checkstart
+                checkfinish = jump_finish_list[-1]
+                blockonpath = False
+                while checkprogress != checkfinish:
+                    get_next_point(current, sec_angle_degrees)
+                    if is_blocked(current, blocked):
+                        blockonpath = True
+                if blockonpath == True:
+                    if secondary_direction == "right":
+                        while still_blocked == True:
+                            jump_finish_list.pop()
+                            current[0]-20
+                            jump_finish_list.append(current)
+                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            
+                            pointdistance = math.dist(start, end)
+                            sec_angle_radians = math.atan2(change_y, change_x)
+                            sec_angle_degrees = math.degrees(angle_radians)
+                            
+                            checkstart = jump_start_list[-1]
+                            checkprogress = checkstart
+                            checkfinish = jump_finish_list[-1]
+                            blockonpath = False
+                            still_blocked = False
+                            while checkprogress != checkfinish:
+                                get_next_point(current, sec_angle_degrees)
+                                if is_blocked(current, blocked):
+                                    still_blocked = True
+                                    blockonpath = True
+                            if still_blocked == False:
+                                blockonpath = False
+                            Navigation.jump_point_search(current, end)
+                    if secondary_direction == "left":
+                        while still_blocked == True:
+                                jump_finish_list.pop()
+                                current[0]+20
+                                jump_finish_list.append(current)
+                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                
+                                pointdistance = math.dist(start, end)
+                                sec_angle_radians = math.atan2(change_y, change_x)
+                                sec_angle_degrees = math.degrees(angle_radians)
+                                
+                                checkstart = jump_start_list[-1]
+                                checkprogress = checkstart
+                                checkfinish = jump_finish_list[-1]
+                                blockonpath = False
+                                still_blocked = False
+                                while checkprogress != checkfinish:
+                                    get_next_point(current, sec_angle_degrees)
+                                    if is_blocked(current, blocked):
+                                        still_blocked = True
+                                        blockonpath = True
+                                if still_blocked == False:
+                                    blockonpath = False
+                                Navigation.jump_point_search(current, end)
+            elif direction == "left":
+                jump_start_list.append(current)
+                cost_efficient = True
+                while cost_efficient == True or current[0]-1 in blocked:
+                    dist1 = math.dist(current, end)
+                    current[0] -= 1
+                    dist2 = math.dist(current, end)
+                    if dist2 > dist1:
+                        cost_efficient = False
+                if angle_degrees > 0:
+                    secondary_direction = "up"
+                elif angle_degrees < 0:
+                    secondary_direction = "down"
+                cost_efficient = True
+                if secondary_direction == "up":
+                    while cost_efficient == True or current[1]+1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[1] += 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                elif secondary_direction == "down":
+                    while cost_efficient == True or current[1]-1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[1] -= 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                
+                pointdistance = math.dist(start, end)
+                sec_angle_radians = math.atan2(change_y, change_x)
+                sec_angle_degrees = math.degrees(angle_radians)
+                
+                checkstart = jump_start_list[-1]
+                checkprogress = checkstart
+                checkfinish = jump_finish_list[-1]
+                blockonpath = False
+                while checkprogress != checkfinish:
+                    get_next_point(current, sec_angle_degrees)
+                    if is_blocked(current, blocked):
+                        blockonpath = True
+                if blockonpath == True:
+                    if secondary_direction == "up":
+                        while still_blocked == True:
+                            jump_finish_list.pop()
+                            current[1]-20
+                            jump_finish_list.append(current)
+                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            
+                            pointdistance = math.dist(start, end)
+                            sec_angle_radians = math.atan2(change_y, change_x)
+                            sec_angle_degrees = math.degrees(angle_radians)
+                            
+                            checkstart = jump_start_list[-1]
+                            checkprogress = checkstart
+                            checkfinish = jump_finish_list[-1]
+                            blockonpath = False
+                            still_blocked = False
+                            while checkprogress != checkfinish:
+                                get_next_point(current, sec_angle_degrees)
+                                if is_blocked(current, blocked):
+                                    still_blocked = True
+                                    blockonpath = True
+                            if still_blocked == False:
+                                blockonpath = False
+                            Navigation.jump_point_search(current, end)
+                    if secondary_direction == "down":
+                        while still_blocked == True:
+                                jump_finish_list.pop()
+                                current[1]+20
+                                jump_finish_list.append(current)
+                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                
+                                pointdistance = math.dist(start, end)
+                                sec_angle_radians = math.atan2(change_y, change_x)
+                                sec_angle_degrees = math.degrees(angle_radians)
+                                
+                                checkstart = jump_start_list[-1]
+                                checkprogress = checkstart
+                                checkfinish = jump_finish_list[-1]
+                                blockonpath = False
+                                still_blocked = False
+                                while checkprogress != checkfinish:
+                                    get_next_point(current, sec_angle_degrees)
+                                    if is_blocked(current, blocked):
+                                        still_blocked = True
+                                        blockonpath = True
+                                if still_blocked == False:
+                                    blockonpath = False
+                                Navigation.jump_point_search(current, end)
+            elif direction == "down":
+                jump_start_list.append(current)
+                cost_efficient = True
+                while cost_efficient == True or current[1]-1 in blocked:
+                    dist1 = math.dist(current, end)
+                    current[1] -= 1
+                    dist2 = math.dist(current, end)
+                    if dist2 > dist1:
+                        cost_efficient = False
+                if angle_degrees > -90 and angle_degrees < 90:
+                    secondary_direction = "right"
+                elif angle_degrees < -90 or angle_degrees > 90:
+                    secondary_direction = "left"
+                cost_efficient = True
+                if secondary_direction == "right":
+                    while cost_efficient == True or current[0]+1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[0] += 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                elif secondary_direction == "left":
+                    while cost_efficient == True or current[0]-1 in blocked or current == end:
+                        dist1 = math.dist(current, end)
+                        current[0] -= 1
+                        dist2 = math.dist(current, end)
+                        if dist2 > dist1:
+                            cost_efficient = False
+                    jump_finish_list.append(current)
+                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                
+                pointdistance = math.dist(start, end)
+                sec_angle_radians = math.atan2(change_y, change_x)
+                sec_angle_degrees = math.degrees(angle_radians)
+                
+                checkstart = jump_start_list[-1]
+                checkprogress = checkstart
+                checkfinish = jump_finish_list[-1]
+                blockonpath = False
+                while checkprogress != checkfinish:
+                    get_next_point(current, sec_angle_degrees)
+                    if is_blocked(current, blocked):
+                        blockonpath = True
+                if blockonpath == True:
+                    if secondary_direction == "right":
+                        while still_blocked == True:
+                            jump_finish_list.pop()
+                            current[0]-20
+                            jump_finish_list.append(current)
+                            change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                            change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                            
+                            pointdistance = math.dist(start, end)
+                            sec_angle_radians = math.atan2(change_y, change_x)
+                            sec_angle_degrees = math.degrees(angle_radians)
+                            
+                            checkstart = jump_start_list[-1]
+                            checkprogress = checkstart
+                            checkfinish = jump_finish_list[-1]
+                            blockonpath = False
+                            still_blocked = False
+                            while checkprogress != checkfinish:
+                                get_next_point(current, sec_angle_degrees)
+                                if is_blocked(current, blocked):
+                                    still_blocked = True
+                                    blockonpath = True
+                            if still_blocked == False:
+                                blockonpath = False
+                            Navigation.jump_point_search(current, end)
+                    if secondary_direction == "left":
+                        while still_blocked == True:
+                                jump_finish_list.pop()
+                                current[0]+20
+                                jump_finish_list.append(current)
+                                change_x = jump_finish_list[-1[0]] - jump_start_list[-1[0]]
+                                change_y = jump_finish_list[-1[1]] - jump_start_list[-1[1]]
+                                
+                                pointdistance = math.dist(start, end)
+                                sec_angle_radians = math.atan2(change_y, change_x)
+                                sec_angle_degrees = math.degrees(angle_radians)
+                                
+                                checkstart = jump_start_list[-1]
+                                checkprogress = checkstart
+                                checkfinish = jump_finish_list[-1]
+                                blockonpath = False
+                                still_blocked = False
+                                while checkprogress != checkfinish:
+                                    get_next_point(current, sec_angle_degrees)
+                                    if is_blocked(current, blocked):
+                                        still_blocked = True
+                                        blockonpath = True
+                                if still_blocked == False:
+                                    blockonpath = False
+                                Navigation.jump_point_search(current, end)
+
+    def MoveTo(X, Y, enddegrees, force=False):
         print("a")
         start_point = [x, y]
         end_point = [X, Y]
@@ -52,12 +484,13 @@ class Navigation():
         angle_radians = math.atan2(delta_y, delta_x)
         angle_degrees = math.degrees(angle_radians)
         
-        fordulas(angle_degrees)
+        fordulas(angle_degrees-90)
         el(30, distance, angle_degrees)
         fordulas(enddegrees+90)
-        
             
-def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
+def el(speed, megt, target=None, multiplier = 0.8, stop = True):
+    if target == None:
+        target = g.angle
     megt = (ml.position+mr.position)/2 + megt
     originalspeed = speed
     megtfok = (ml.position+mr.position)/2
@@ -76,15 +509,20 @@ def el(speed, megt, target=g.angle, multiplier = 0.8, stop = True):
         if stop == True:
             if remfok < 100:
                 speed = max(originalspeed*(remfok*0.01), 10)
-            
-        ms.on(correction, speed)
+        
+        if megt >= 0:
+            ms.on(correction, speed)
+        if megt < 0:
+            ms.on(correction, -speed)
         print(remaining, g.angle, (ml.position+mr.position)/2<megt)
     if stop == True:
         print("Motors turning off") 
         ms.off()
     return 0 
 
-def hel(speed, megt, target=g.angle, multiplier =0.8, stop=True):
+def hel(speed, megt, target=None, multiplier =0.8, stop=True):
+    if target == None:
+        target = g.angle
     megt = (ml.position+mr.position)/2 + megt
     while (ml.position+mr.position)/2>megt:
         remaining = target-g.angle
@@ -232,8 +670,8 @@ def wb():
 def szp():
     #színpad
     g.reset()
-    el(60, 460, 0, multiplier=0.3)
-    fordulas(-45,)
+    el(60, 460, 1, multiplier=0.3)
+    fordulas(-45)
     
     #színpad
     time.sleep(0.5)
@@ -288,7 +726,7 @@ def csirke():
 
 x=0
 y=0
-navt = Thread(target=Navigation.CordinateUpdates())
+navt = Thread(target=Navigation.CordinateUpdates)
 navt.start()
 valasztas = 0
 balra = 0
@@ -345,6 +783,8 @@ while menu == True:
                 elif valasztas == 1:
                     print("Program elinditva")
                     mongas = False
+                    attachmentysizechangeplus = Navigation.GetNumberInCordinates(3.51)
+                    attachmentysizechangeminus, attachmentxsizechangeminus, attachmentxsizechangeplus = 0
                     time.sleep(0.3)
                     valasztas += 1
                     wb()
@@ -363,6 +803,10 @@ while menu == True:
                 elif valasztas == 4: 
                     print("Program elinditva")
                     mongas = False
+                    attachmentysizechangeplus = Navigation.GetNumberInCordinates(15.4)
+                    attachmentxsizechangeplus = Navigation.GetNumberInCordinates(6.9)
+                    attachmentxsizechangeminus = Navigation.GetNumberInCordinates(-6.9)
+                    attachmentysizechangeminus = 0
                     time.sleep(0.3)
                     valasztas += 1
                     csirke()
@@ -404,4 +848,4 @@ while menu == True:
         print("d")
         pass
     btn = None
-
+    

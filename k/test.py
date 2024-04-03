@@ -100,3 +100,5 @@ def fordulas(target, multiplier=0.7):
         print(diff, target, g.angle)
     mt.stop()
     time.sleep(0.3)
+
+el(30, 100)
