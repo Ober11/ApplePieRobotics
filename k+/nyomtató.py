@@ -18,22 +18,29 @@ speaker = Sound()
 
 class Pen():
     print("a")
-    def updown():
-        pvmotor.on_for_degrees(80, 180)
+    def up():
+        pvmotor.on_for_degrees(80, 140)
+    def down():
+        pvmotor.on_for_degrees(-80, 140)
     def MovePenVector(direction, distance):
-        direction_rad = math.radians(direction)
+        if direction == 0 or -0:
+            phmotor.on_for_degrees(30, distance)
+        else:    
+            direction*=-1
+            direction+=90
+            direction_rad = math.radians(direction)
 
-        delta_x = distance * math.cos(direction_rad)
-        delta_y = distance * math.sin(direction_rad)
+            delta_x = distance * math.cos(direction_rad)
+            delta_y = distance * math.sin(direction_rad)
 
-        print(delta_x, delta_y)
-        if delta_y != 0:
-            ratio = delta_x / delta_y
-            print("Ratio of delta_x / delta_y:", ratio)
-        scaling_factor = 1.5 / ratio
-        phmotor.on_for_degrees(30*scaling_factor, delta_y, block=False)
-        inputmotor.on_for_degrees(-30*scaling_factor, delta_x, block=False)
-        outputmotor.on_for_degrees(30*scaling_factor, delta_x)
+            print(delta_x, delta_y)
+            if delta_y != 0:
+                ratio = delta_x / delta_y
+                print("Ratio of delta_x / delta_y:", ratio)
+            scaling_factor = 1.5 / ratio
+            phmotor.on_for_degrees(30*scaling_factor, delta_y, block=False)
+            inputmotor.on_for_degrees(-30*scaling_factor, delta_x, block=False)
+            outputmotor.on_for_degrees(30*scaling_factor, delta_x)
     
     def reset():
         while phmotor.position != 0:
@@ -101,81 +108,113 @@ class Letters():
     class Write():
         print("a")
         def a():  
-            Pen.updown()
+            Pen.down()
             Pen.MovePenVector(45, 500)
-            Pen.MovePenVector(-45, -500)
-            Pen.updown
+            Pen.MovePenVector(-45, 500)
+            Pen.up()
             Pen.MovePenVector(45, 250)
-            Pen.updown
-            Pen.MovePenVector(0, 500)
-            Pen.updown
+            Pen.down()
+            Pen.MovePenVector(0, 450)
+            Pen.up()
             print("a")
-            #FONTOS hogy a görbék NEM voltak tesztelve így nem biztos hogy jól működnek
-            phmotor.reset
+            Pen.reset()
+
         def b():
+            Pen.down()
+            phmotor.on_for_degrees(30, 500)
+            Pen.MovePenVector(0, 200)
+            phmotor.on_for_degrees(30, 200)
+            Pen.MovePenVector(-0, -200)
+            Pen.up()
+            Pen.MovePenVector(0, 300)
+            phmotor.on_for_degrees(30, 300)
+            Pen.MovePenVector(-0, -300)
+            Pen.down()
             print("b")
+            Pen.up()
+            Pen.reset()
         def c():
+            Pen.down()
+            phmotor.on_for_degrees(30, 500)
+            Pen.MovePenVector(0, 450)
+            phmotor.on_for_degrees(-0, -500)
+            Pen.MovePenVector(-0, -450)
+            Pen.up()
             print("c")
+            Pen.reset()
         def d():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
-            phmotor.on_for_degrees(-20, -250, Blokc=False)
-            inputmotor.on_for_degrees(30, 200, Block=False)
-            outputmotor.on_for_degrees(30, 200, Block=False)
-            time.sleep(0,2)
-            phmotor.on_for_degrees(-20, -250, Block=False)
-            inputmotor.on_for_degrees(-20, -200, Block=False)
-            outputmotor.on_for_degrees(-20, -200, Block=False)
-            Pen.updown
+            Pen.MovePenVector(-45, 50)
+            Pen.MovePenVector(-70, 50)
+            phmotor.on_for_degrees(-30, -250)
+            Pen.MovePenVector(110,50)
+            Pen.MovePenVector(135, 50)
+            Pen.up()
             print("d")
-            phmotor.reset
+            Pen.reset()
         def e():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
             Pen.MovePenVector(0, 500)
-            Pen.updown
+            Pen.up()
             phmotor.on_for_degrees(-30, -250)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(-0, -500)
-            Pen.updown
+            Pen.up()
             phmotor.on_for_degrees(-30, -250)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(0, 500)
+            Pen.up()
             print("e")
-            phmotor.reset
+            Pen.reset()
         def f():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
             Pen.MovePenVector(0, 500)
-            Pen.updown
+            Pen.up()
             phmotor.on_for_degrees(-30, -200)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(-0, -500)
-            Pen.updown
+            Pen.up()
             print("f")
-            phmotor.reset
+            Pen.reset()
         def g():
-            print("g")
-        def h():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.MovePenVector(0, 300)
+            Pen.up()
+            Pen.MovePenVector(-0, -300)
+            phmotor.on_for_degrees(-30, -500)
+            Pen.down()
+            Pen.MovePenVector(0, 250)
+            phmotor.on_for_degrees(30, 200)
+            Pen.MovePenVector(-0, -100)
+            Pen.MovePenVector(0, 200)
+            Pen.up()
+            print("g")
+            Pen.reset()
+        def h():
+            Pen.down()
+            phmotor.on_for_degrees(30, 500)
+            Pen.up()
             phmotor.on_for_degrees(30, 250)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(0, 250)
             phmotor.on_for_degrees(-30, -250)
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.up()
             print("h")
-            phmotor.reset
+            Pen.reset()
         def i():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
+            Pen.updown()()
             print("i")
-            phmotor.reset
+            Pen.reset()
         def j():
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(0, 300)
             Pen.MovePenVector(-0, -150)
             phmotor.on_for_degrees(30, 400)
@@ -183,71 +222,118 @@ class Letters():
             inputmotor.on_for_degrees(-30, -100, Block=False)
             outputmotor.on_for_degrees(-30, -100, Block=True)
             inputmotor.on_for_degrees(30, 100, Block=False)
-            outputmotor.on_for_degrees(30, 100, Block=True)
-            Pen.updown
+            outputmotor.on_for_degrees(30, 100, )
+            Pen.up()
             print("j")
-            phmotor.reset
+            Pen.reset()
         def k():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.up()
             phmotor.on_for_degrees(30, 250)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(45, 200)
-            Pen.updown
+            Pen.up()
             phmotor.on_for_degrees(30, 300)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(-45,-500)
-            Pen.updown
+            Pen.up()
             print("k")
-            phmotor.reset
+            Pen.reset()
         def l():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.up()
             phmotor.on_for_degrees(-30, -500)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(0, 200)
+            Pen.up()
             print("l")
-            phmotor.reset
+            Pen.reset()
         def m():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
             Pen.MovePenVector(-45, -500)
             Pen.MovePenVector(45, 500)
             phmotor.on_for_degrees(-30, -500)
-            Pen.updown
+            Pen.up()
             print("m")
-            phmotor.reset
+            Pen.reset()
         def n():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
             Pen.MovePenVector(-45, -500)
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.up()
             print("n")
-            phmotor.reset
+            Pen.reset()
         def o():
+            Pen.down()
+            phmotor.on_for_degrees(30, 500)
+            Pen.MovePenVector(0, 500)
+            phmotor.on_for_degrees(-30, -500)
+            Pen.MovePenVector(180, 500)
+            Pen.up()
             print("o")
+            Pen.reset()
         def p():
+            Pen.down()
+            phmotor.on_for_degrees(30, 500)
+            phmotor.on_for_degrees(-30, -100, Block=False)
+            inputmotor.on_for_degrees(-30, -150, Block=False)
+            outputmotor.on_for_degrees(-30, -150)
+            time.sleep(0,5)
+            phmotor.on_for_degrees(-30, -100, Block=False)
+            inputmotor.on_for_degrees(30, 150, Block=False)
+            outputmotor.on_for_degrees(30, 150)
+            Pen.up()
             print("p")
+            Pen.reset()
         def q():
+            Pen.down()
+            phmotor.on_for_degrees(30, 500)
+            Pen.MovePenVector(0, 500)
+            phmotor.on_for_degrees(-30, -500)
+            Pen.MovePenVector(-0, -500)
+            Pen.up()
+            Pen.MovePenVector(0, 250)
+            phmotor.on_for_degrees(30, 250)
+            Pen.down()
+            Pen.MovePenVector(50, 400)
+            Pen.up()
             print("q")
+            Pen.reset()
         def r():
+            Pen.down()
+            phmotor.on_for_degrees(30, 500)
+            Pen.MovePenVector(0, 200)
+            phmotor.on_for_degrees(30, 200)
+            Pen.MovePenVector(-0, -200)
+            Pen.MovePenVector(-45, -300)
+            Pen.up()
             print("r")
+            Pen.reset()
         def s():
+            Pen.down()
+            Pen.MovePenVector(0, 250)
+            phmotor.on_for_degrees(30, 250)
+            Pen.MovePenVector(180, 250)
+            phmotor.on_for_degrees(30, 250)
+            Pen.MovePenVector(0, 250)
+            Pen.up()
             print("s")
+            Pen.reset()
         def t():
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(30, 500)
             Pen.MovePenVector(-0, -250)
             Pen.MovePenVector(0, 500)
-            Pen.updown
+            Pen.up()
             print("t")
-            phmotor.reset
+            Pen.reset()
         def u():
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.down()
             phmotor.on_for_degrees(-30, -400, Block=True)
             phmotor.on_for_degrees(-20, -100, Block=False)
             inputmotor.on_for_degrees(30, 100, Block=False)
@@ -256,55 +342,55 @@ class Letters():
             inputmotor.on_for_degrees(30, 100, Block=False)
             outputmotor.on_for_degrees(30, 100, Block=False)
             phmotor.on_for_degrees(30, 400, Block=True)
-            Pen.updown
+            Pen.up()
             print("u")
-            phmotor.reset
+            Pen.reset()
         def v():
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(-30, -500)
             Pen.MovePenVector(30, 500)
-            Pen.updown
+            Pen.up()
             print("v")
-            phmotor.reset
+            Pen.reset()
         def w():
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(-30, -500)
             Pen.MovePenVector(30, 500)
             Pen.MovePenVector(-30, -500)
             Pen.MovePenVector(30, 500)
-            Pen.updown
+            Pen.up()
             print("w")
-            phmotor.reset
+            Pen.reset()
         def x():
-            Pen.updown()
+            Pen.down()
             Pen.MovePenVector(45, 500)
-            Pen.updown()
+            Pen.up()
             phmotor.on_for_degrees(30, 200)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(-45, -500)
-            Pen.updown
+            Pen.up()
             print("x")
-            phmotor.reset()
+            Pen.reset()
         def y():
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(-45, -250)
             Pen.MovePenVector(45, 250)
             Pen.MovePenVector(225, 500)
-            Pen.updown
+            Pen.up()
             print("y")
-            phmotor.reset
+            Pen.reset()
         def z():
             phmotor.on_for_degrees(30, 500)
-            Pen.updown
+            Pen.down()
             Pen.MovePenVector(0, 500)
             Pen.MovePenVector(-45, -500)
             Pen.MovePenVector(0, 500)
-            Pen.updown
+            Pen.up()
             print("z")
-            phmotor.reset
+            Pen.reset()
         def space():
             print("space")
 
@@ -316,18 +402,24 @@ morse = []
 while True:
     while mode == "morse":
         if button1.is_pressed == True:
-            Pen.updown()
+            start_time = time.time()
             while button1.is_pressed == True:
                 pass
-            Pen.updown()
-        if button2.is_pressed == True:
-            if inputmotor.is_running == True:
-                inputmotor.off()
-                outputmotor.off()
-                time.sleep(0.2)
+            elapsed_time= time.time() - start_time
+            if elapsed_time >= 0.2:
+                Pen.down()
+                inputmotor.on_for_degrees(-30, 50, block=False)
+                outputmotor.on_for_degrees(30, 50)
+                Pen.up()
             else:
-                inputmotor.on(-10, block=False)
-                outputmotor.on(10, block=False)
+                Pen.down()
+                inputmotor.on_for_degrees(-30, 150, block=False)
+                outputmotor.on_for_degrees(30, 150)
+                Pen.up()
+                    
+        if button2.is_pressed == True:
+            inputmotor.on_for_degrees(-30, 150, block=False)
+            outputmotor.on_for_degrees(30, 150)
             time.sleep(0.2)
         if button3.is_pressed == True:
             mode = "letter"
@@ -366,4 +458,5 @@ while True:
         inputmotor.on_for_degrees(20, 30, block=False)
         outputmotor.on_for_degrees(20, 30)
 
+    
     
