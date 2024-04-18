@@ -24,6 +24,7 @@ firstnavloop = True
 # 1 cordinate unit = 0.0508 cm
 
 
+
 class Navigation():
     def GetNumberInCordinates(centimeters):
         cordinates = centimeters / 0.0508
@@ -38,7 +39,7 @@ class Navigation():
             elif not firstnavloop:
                 motorpositionstart = nextstartposition
             motorpositionfinish = (ml.position*mr.position)/2
-            robotangle = GyroSensor("in2").angle
+            robotangle = g.angle
             nextstartposition = (ml.position*mr.position)/2
             motorpositionchange = motorpositionfinish - motorpositionstart
             xcordinatechange = motorpositionchange * math.sin(robotangle)
@@ -64,33 +65,37 @@ class Navigation():
         turn(enddegrees+90)
             
 def forandbackward(speed, distance, target=None, multiplier = 0.8, stop = True):
+    #setting the target to the current angle if no target is given
     if target == None:
         target = g.angle
-    start_degrees = (ml.position+mr.position)/2
-    if distance < 0:
-        target_distance = start_degrees + distance
-    else:
-        target_distance = start_degrees + distance
+    distance = (ml.position+mr.position)/2 + distance
     originalspeed = speed
-    completed_degrees = start_degrees
-    remaining_degrees = target_distance - completed_degrees
-    original_remaining_degrees = remaining_degrees
-    while remaining_degrees * (1 if distance >= 0 else -1) > 0:
-        iteration_completed_degrees = (ml.position+mr.position)/2-start_degrees
-        remaining_degrees = original_remaining_degrees - iteration_completed_degrees
-        if abs(iteration_completed_degrees) < 50:
-            speed = max(abs(iteration_completed_degrees) * (originalspeed*0.02), 10)
+    megtfok = (ml.position+mr.position)/2
+    remfok = distance - megtfok
+    while remfok > 0:
+        megtfok = (ml.position+mr.position)/2
+        remfok = distance - megtfok
+        if megtfok < 50:
+            speed = max(megtfok * (originalspeed*0.02), 10)
         remaining = target-g.angle
         correction = remaining*multiplier
-        correction = min(max(correction, -100), 100)
-        if stop == True and abs(remaining_degrees) < 100:
-            speed = max(originalspeed*(abs(remaining_degrees)*0.01), 10)
-        ms.on(correction if distance >= 0 else -correction, speed if distance >= 0 else -speed)
-        print(remaining, g.angle, (ml.position+mr.position)/2<target_distance, ml.position, mr.position)
+        if correction > 100:
+            correction = 100
+        elif correction < -100:
+            correction = -100
+        if stop == True:
+            if remfok < 100:
+                speed = max(originalspeed*(remfok*0.01), 10)
+        
+        if distance >= 0:
+            ms.on(correction, speed)
+        if distance < 0:
+            ms.on(correction, -speed)
+        print(remaining, g.angle, (ml.position+mr.position)/2<distance)
     if stop == True:
         print("Motors turning off") 
         ms.off()
-    return 0
+    return 0 
 
 
 
@@ -130,5 +135,6 @@ def turn(target, multiplier=0.7, timeout=None):
     mt.stop()
     time.sleep(0.3)
 
-g.reset()
-turn(60)
+
+ml.reset()
+mr.reset()
