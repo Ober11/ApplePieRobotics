@@ -149,10 +149,7 @@ def mhdt():
     kr.on_for_degrees(-30, 500)
     
     
-    
-    
-    
-    
+   
 
 def mk():
     #mozgó kamera
