@@ -66,10 +66,11 @@ def fordulas(target, multiplier=0.7):
         print(diff, target, g.angle)
     mt.stop()
 
-# mozgó kamera
-el(60, 700, 0)
-time.sleep(1)
-hel(-60, -1100, 0)
+el(30, 100)
 time.sleep(2)
-el(60, 1300, 0)
-hel(-60, -1100, 0)
+kr.on_for_degrees(60, 900)
+time.sleep(2)
+kr.on_for_degrees(60, -650)
+time.sleep(1)
+hel(-30, -50)
+kr.on_for_degrees(60, -400)
