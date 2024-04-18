@@ -32,6 +32,8 @@ class Pen():
         time.sleep(0.3)
         if pendown:
             pvmotor.on_for_degrees(-30, 60, brake=False)
+
+
         
 class Letters():
     print("a")
@@ -228,6 +230,8 @@ class Letters():
             Pen.move_spaces(2, False)
         def space():
             Pen.move_spaces(5, False)
+
+
 
 print("a")
 def checkinput():
