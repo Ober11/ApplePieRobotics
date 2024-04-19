@@ -94,7 +94,7 @@ def forandbackward(speed, distance, target=None, multiplier = 0.8, stop = True):
 
 
 
-def turn(target, multiplier=0.5, timeout=None):
+def turn(target, multiplier=0.4, timeout=None):
     #modulo modifiers for efficiency
     if target < 0:
         target=target*-1
@@ -144,70 +144,81 @@ def big_lap():
     # mozgókép három dimenziónális térben
     #   3d mozi
     g.reset()
-    forandbackward(60, 420, 0, 0.6)
+    forandbackward(60, 500, 0, 0.6)
     turn(44)
     g.reset()
     
     #   jelenetváltás
     time.sleep(0.2)
-    forandbackward(60, 340, 0)
-    kl.on_for_degrees(30, 120)
+    forandbackward(60, 440, 0)
+    kl.on_for_degrees(30, 80)
     #popcorn expert and audience member placed
     time.sleep(0.2)
-    forandbackward(50, 660)
+    forandbackward(50, 500)
     kr.on_for_degrees(30, -200)
     turn(50, 0.2)
     #forandbackward(30, -90)
     #kr.on_for_degrees(60, 900)
     
     time.sleep(1)
+    #put audience member
     kl.on_for_degrees(30, 120)
     turn(50)
-    forandbackward(30, 150)
+    forandbackward(30, 195)
     kr.on_for_degrees(60, -300)
     forandbackward(30, 125)
-    forandbackward(30, 50)
+    forandbackward(30, 75)
     time.sleep(0.2)
-    kr.on_for_degrees(60, 9000)
-    time.sleep(0.2)
-    kr.on_for_degrees(60, -9000)
-    time.sleep(0.2)
-    kr.on_for_degrees(60, 700)
+    
+    kr.on_for_degrees(60, 1000)
+    time.sleep(1)
+    kr.on_for_seconds(-60, 2)
+    time.sleep(0.5)
+    kr.on_for_degrees(60, 600)
     time.sleep(0.2)
     forandbackward(30, -100)
     time.sleep(0.2)
-    kr.on_for_degrees(60, -700)
+    kr.on_for_degrees(60, -200)
     
-    forandbackward(60, -160)
-    turn(-48, 0.6, 3)
-    forandbackward(60, 170)
-    kl.on_for_degrees(30, 120)
-    forandbackward(60, 370)
-    kr.on_for_degrees(60, -100)
-    forandbackward(60, 65)
-    kr.on_for_degrees(60, 500)
-    time.sleep(0.2)
-    kr.on_for_degrees(60, -500)
+    kr.on_for_seconds(-60, 1.5)
+    forandbackward(40, -120)
+    turn(-47, 0.25, 3)
+    forandbackward(60, 340)
+    kl.on_for_degrees(30, 100)
+    kr.on_for_seconds(-60, 2.5)
+    #put the expert and audience member down
+    forandbackward(60, 200)
+
+    forandbackward(60, 40)
+    #imerzív tapasztalat lenyomása
+    kr.on_for_degrees(60, 700)
+    time.sleep(1)
+    kr.on_for_degrees(60, -700)
+    #touched imerzív tapasztalat
     forandbackward(60, -130)
-    turn(-115)
-    forandbackward(60, 300, stop=False)
+    turn(-105, 0.3)
+    forandbackward(60, 390, stop=False)
     forandbackward(60, 400, -180)
     turn(-135)
-    kl.on_for_degrees(30, 120)
+    kl.on_for_degrees(30, 80)
     turn(-180)
-    forandbackward(60, 740)
-    turn(-150)
+    forandbackward(60, 700)
+    #in front of the rollecoster switch
+    turn(-135)
     time.sleep(0.2)
     kr.on_for_degrees(60, 700)
-    time.sleep(0.2)
+    time.sleep(0.5)
     forandbackward(60, -100)
     kr.on_for_degrees(60, -700)
     turn(-90)
-    forandbackward(-60, -400)
-    kr.on_for_degrees(60, 900)
+    forandbackward(40, -130)
+    kr.on_for_degrees(60, 500)
     time.sleep(0.2)
-    forandbackward(60, -400, -135)
+    forandbackward(60, -300)
+    turn(-25)
+    forandbackward(60, -300)
     kr.on_for_degrees(60, -500)
+    forandbackward(100, -800)
 
 
     '''forandbackward(60, -60)
