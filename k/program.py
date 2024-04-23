@@ -64,29 +64,42 @@ class Navigation():
         turn(enddegrees+90)
             
 def forandbackward(speed, distance, target=None, multiplier = 0.8, stop = True):
+    #checking if the target is manually set, if not it will be the current angle of the gyrosensor. This is needed because pythons default value stays the same as when it was initialized
     if target == None:
         target = g.angle
+    #assigning a variable to the position of the motors at the start
     start_degrees = (ml.position+mr.position)/2
-    if distance < 0:
-        target_distance = start_degrees + distance
-    else:
-        target_distance = start_degrees + distance
+    #calculating the target motor position compared to the current starting position
+    target_distance = start_degrees + distance
+    #assigning the original full speed to a variable
     originalspeed = speed
-    completed_degrees = start_degrees
-    remaining_degrees = target_distance - completed_degrees
+    #calculating the remaining motor degrees to the target
+    remaining_degrees = target_distance - start_degrees
+    #assigning a variable to the remaining degrees that remain unchanged for later calculations
     original_remaining_degrees = remaining_degrees
+    #looping until the target is reached
     while remaining_degrees * (1 if distance >= 0 else -1) > 0:
+        #calculating how much of the distance is already covered
         iteration_completed_degrees = (ml.position+mr.position)/2-start_degrees
+        #calculating the remaining distance to the target
         remaining_degrees = original_remaining_degrees - iteration_completed_degrees
+        #linear acceleration, this is where the variably originalspeed is used, by using linear scaling until its fully reached
         if abs(iteration_completed_degrees) < 50:
             speed = max(abs(iteration_completed_degrees) * (originalspeed*0.02), 10)
+        #calculating the gyro angle compared to the target angle, for correcting the angle so we don't stray off path, or to turn while moving
         remaining = target-g.angle
+        #using a multiplier to control the speed of turning
         correction = remaining*multiplier
+        #completely limiting the speed of turning
         correction = min(max(correction, -100), 100)
+        #linear deceleration
         if stop == True and abs(remaining_degrees) < 100:
             speed = max(originalspeed*(abs(remaining_degrees)*0.01), 10)
+        #turning on the motors
         ms.on(correction if distance >= 0 else -correction, speed if distance >= 0 else -speed)
+        #printing debugging variables
         print(remaining, g.angle, (ml.position+mr.position)/2<target_distance, ml.position, mr.position)
+    #stopping the motors after the target is reached
     if stop == True:
         print("Motors turning off") 
         ms.off()
