@@ -134,11 +134,17 @@ def turn(target, multiplier=0.4, timeout=None):
 def tokiodrift():
     #3,5 sec
     g.reset()
-    forandbackward(80, -240, stop=False)
-    forandbackward(100, -580, -24, multiplier=1.4)
-    turn(-42, 2.1, timeout=2)
+    forandbackward(80, 240, stop=False)
+    turn(-27, 1)
+    forandbackward(60, 610)
+    turn(-135, 1, timeout=2,)
+    forandbackward(60, -200)
+    g.reset()
+    time.sleep(0.2)
+    forandbackward(60, 250, 10)
+    forandbackward(60, -250)
     time.sleep(0.1)
-    forandbackward(100, 800, 0)
+    forandbackward(100, 800, -60)
     
 def big_lap():
     # mozgókép három dimenziónális térben
@@ -205,19 +211,25 @@ def big_lap():
     forandbackward(60, 700)
     #in front of the rollecoster switch
     turn(-135)
+    forandbackward(60, 20)
     time.sleep(0.2)
     kr.on_for_degrees(60, 700)
     time.sleep(0.5)
-    forandbackward(60, -100)
+    forandbackward(60, -140)
     kr.on_for_degrees(60, -700)
     turn(-90)
-    forandbackward(40, -130)
+    #after this we move the ring into its box
+    forandbackward(40, -170)
     kr.on_for_degrees(60, 500)
     time.sleep(0.2)
+    #putting the rod in the ring
     forandbackward(60, -300)
     turn(-25)
-    forandbackward(60, -300)
+    forandbackward(60, -200)
     kr.on_for_degrees(60, -500)
+    #back to base
+    forandbackward(60, -150)
+    turn(-72)
     forandbackward(100, -800)
 
 
@@ -347,10 +359,10 @@ def chicken():
     forandbackward(70, 470)
     kl.on_for_degrees(100, 4000)
     forandbackward(30, -500)
-    turn(45)
-    forandbackward(100, 1000, 46, 1, stop=False)
-    forandbackward(60, 200, 41, stop=False)
-    forandbackward(100, 1000, 46, stop=False)
+    turn(40)
+    forandbackward(100, 1000, 42, 1, stop=False)
+    forandbackward(60, 200, 38, stop=False)
+    forandbackward(100, 1000, 40, stop=False)
     forandbackward(60, 1000, 91)
 
 
@@ -367,35 +379,39 @@ menu = True
 menu_select = True
 while menu == True:
     if choice < 0:
-        choice = 6
-    elif choice > 6:
+        choice = 7
+    elif choice > 7:
         choice = 0
     if choice == 0:
         left = "-"
-        fo = "futas1"
-        right = "mozgókép 1. futás"
-    elif choice == 1:
-        left = "exit"
-        fo = "hangmixer"
-        right = "Mozgókamera"
+        fo = "chicken"
+        right = "tokiodrift"
+    if choice == 1:
+        left = "chicken"
+        fo = "tokiodrift"
+        right = "sound mixer"
     elif choice == 2:
-        left = "Mozgókép 1. futás"
-        fo = "torony"
-        right = "waterboard"
+        left = "tokiodrift"
+        fo = "sound mixer"
+        right = "big lap"
     elif choice == 3:
-        left = "Mozgókamera"
-        fo = "mozgókamera"
-        right = "színpad"
+        left = "sound mixer"
+        fo = "big lap"
+        right = "tower"
     elif choice == 4:
-        left = "waterboard"
-        fo = "csirke"
-        right = "torony"
+        left = "big lap"
+        fo = "tower"
+        right = "roller coaster"
     elif choice == 5:
-        fo = "színpad"
+        left = "tower"
+        fo = "roller coaster"
+        right = "hologram"
     elif choice == 6:
-        left = "színpad"
-        fo = "vége"
-        right = "exit"
+        fo = "hologram"
+    elif choice == 7:
+        left = "hologram"
+        fo = "exit"
+        right = "chicken"
     #print("\033c", end="")
     print("------------------------------------")
     print("Nyomj egy felfelét a következő futáshoz")
@@ -411,41 +427,47 @@ while menu == True:
                 print("a")
                 if choice == 0:
                     menu_select = False
-                    big_lap()
                     choice += 1 
+                    chicken()
                 elif choice == 1:
                     print("Program elinditva")
                     menu_select = False
                     time.sleep(0.3)
                     choice += 1
-                    soundmixer()
+                    tokiodrift()
                 elif choice == 2:
                     print("Program elinditva")
                     menu_select = False
                     time.sleep(0.3)
                     choice += 1
-                    lightshow()
+                    soundmixer()
                 elif choice == 3: 
                     print("Program elinditva")
                     menu_select = False
                     time.sleep(0.3)
                     choice += 1
-                    rollercoaster()
+                    big_lap()
                 elif choice == 4: 
                     print("Program elinditva")
                     menu_select = False
                     time.sleep(0.3)
                     choice += 1
-                    chicken()
+                    lightshow()
                 elif choice == 5: 
                     print("Program elinditva")
                     menu_select = False
                     time.sleep(0.3)
                     choice += 1
-                    concert()
+                    rollercoaster()
                 elif choice == 6: 
                     print("Program elinditva")
                     menu_select = False
+                    time.sleep(0.3)
+                    choice+=1
+                    concert()
+                elif choice == 7:
+                    print("program befejezve")
+                    menu_select=False
                     menu=False
             if btn.right == True:
                 choice+=1
