@@ -2,6 +2,7 @@
 from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2.button import *
+from ev3dev2.console import Console
 import time
 from threading import Thread
 mt = MoveTank("outA", "outD",)
@@ -23,6 +24,8 @@ firstnavloop = True
 # 100 cordinate units == 5.08 cm
 # 1 cordinate unit = 0.0508 cm
 
+console = Console()
+console.set_font(font='Lat15-Terminus20x10', reset_console=False)
 
 class Navigation():
     def GetNumberInCordinates(centimeters):
