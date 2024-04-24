@@ -94,7 +94,7 @@ def forandbackward(speed, distance, target=None, multiplier = 0.8, stop = True):
 
 
 
-def turn(target, multiplier=0.4, timeout=None):
+def turn(target, multiplier=0.6, timeout=None):
     #modulo modifiers for efficiency
     if target < 0:
         target=target*-1
@@ -134,9 +134,10 @@ def turn(target, multiplier=0.4, timeout=None):
 def tokiodrift():
     #3,5 sec
     g.reset()
+    time.sleep(0.1)
     forandbackward(80, 240, stop=False)
     turn(-27, 1)
-    forandbackward(60, 610)
+    forandbackward(60, 630)
     turn(-135, 1, timeout=2,)
     forandbackward(60, -200)
     g.reset()
@@ -148,19 +149,20 @@ def tokiodrift():
     
 def big_lap():
     # mozgókép három dimenziónális térben
+    # 51 sec
     #   3d mozi
     g.reset()
     forandbackward(60, 500, 0, 0.6)
-    turn(44)
+    turn(44, 0.4)
     g.reset()
     
     #   jelenetváltás
     time.sleep(0.2)
-    forandbackward(60, 440, 0)
-    kl.on_for_degrees(30, 80)
+    forandbackward(60, 480, 0)
+    kl.on_for_degrees(30, 110)
     #popcorn expert and audience member placed
     time.sleep(0.2)
-    forandbackward(50, 500)
+    forandbackward(50, 460)
     kr.on_for_degrees(30, -200)
     turn(50, 0.2)
     #forandbackward(30, -90)
@@ -198,39 +200,42 @@ def big_lap():
     forandbackward(60, 40)
     #imerzív tapasztalat lenyomása
     kr.on_for_degrees(60, 700)
-    time.sleep(1)
+    time.sleep(0.4)
+    forandbackward(60, -50)
+    time.sleep(0.1)
     kr.on_for_degrees(60, -700)
     #touched imerzív tapasztalat
-    forandbackward(60, -130)
-    turn(-105, 0.3)
+    forandbackward(60, -80)
+    turn(-105)
     forandbackward(60, 390, stop=False)
     forandbackward(60, 400, -180)
-    turn(-135)
+    turn(-140)
     kl.on_for_degrees(30, 80)
     turn(-180)
     forandbackward(60, 700)
     #in front of the rollecoster switch
-    turn(-135)
+    turn(-134)
     forandbackward(60, 20)
     time.sleep(0.2)
     kr.on_for_degrees(60, 700)
     time.sleep(0.5)
-    forandbackward(60, -140)
+    #switched the rollercoaster switch
+    forandbackward(60, -120)
     kr.on_for_degrees(60, -700)
     turn(-90)
     #after this we move the ring into its box
-    forandbackward(40, -170)
+    forandbackward(40, -190)
     kr.on_for_degrees(60, 500)
     time.sleep(0.2)
     #putting the rod in the ring
-    forandbackward(60, -300)
+    forandbackward(40, -320)
     turn(-25)
-    forandbackward(60, -200)
+    forandbackward(50, -200)
     kr.on_for_degrees(60, -500)
     #back to base
-    forandbackward(60, -150)
+    forandbackward(100, -150)
     turn(-72)
-    forandbackward(100, -800)
+    forandbackward(100, -800, -80)
 
 
     '''forandbackward(60, -60)
@@ -273,27 +278,27 @@ def big_lap():
     
     
 def rollercoaster():
-    #7,5 sec
+    #7 sec
     #mozgó kamera ellökése
     g.reset()
     forandbackward(100, -1000, 0)
-    time.sleep(1.5)
+    time.sleep(1)
     forandbackward(100, 1450, 0)
     forandbackward(100, -800, 0)
 
 def soundmixer():
     #hangmixer
-    #7.5 sec
+    #6.1 sec
     g.reset()
     forandbackward(40, 630, 0, 0.5, stop=False)
     forandbackward(50, 200, 0.5)
-    kr.on_for_degrees(-30, 400)
+    kr.on_for_degrees(-100, 400)
     time.sleep(0.1)
     forandbackward(20, -200, 0, 0.8, stop=False)
     forandbackward(60, -750, -30, 0.4)
 
 def concert():
-    #13 sec
+    #9 sec
     #színpad
     g.reset()
     forandbackward(60, 350, 1, multiplier=0.3)
@@ -301,10 +306,12 @@ def concert():
     
     #színpad
     time.sleep(0.5)
-    forandbackward(60, 430, -45, multiplier=0.3, stop=False)
-    forandbackward(60, 620, -15, 0.3)
-    turn(-90, 0.5) 
-    forandbackward(70, 450, -90, multiplier=0.3,)
+    forandbackward(70, 1100)
+    forandbackward(100, 500, -90)
+    #forandbackward(60, 430, -45, multiplier=0.3, stop=False)
+    #forandbackward(60, 620, -15, 0.3)
+    #turn(-90, 0.5) 
+    #forandbackward(70, 450, -90, multiplier=0.3,)
     kr.on_for_degrees(-30, 300) 
     kl.on_for_degrees(-30, 700)
     forandbackward(60, -200, -90, 1.5)
@@ -313,12 +320,12 @@ def concert():
 
 def lightshow():
     #fényjáték
-    #23,5 sec
+    #24 sec
     g.reset()
     time.sleep(0.5)
     forandbackward(60, 1200, 0, stop=False)
     forandbackward(45, 200, 0,)
-    kl.on_for_rotations(-30, 3.75)
+    kl.on_for_rotations(-100, 3.75)
     #Masterpiece(Tm)
     forandbackward(50, -20, 0, 0.5)
     print("el1")
@@ -351,12 +358,12 @@ def lightshow():
 
 
 def chicken():
-    #19,5 sec
+    #17,6 sec
     g.reset()
     forandbackward(60, 640, 0)
     turn(60)
     turn(0, 0.6)
-    forandbackward(70, 470)
+    forandbackward(100, 470)
     kl.on_for_degrees(100, 4000)
     forandbackward(30, -500)
     turn(40)
