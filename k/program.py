@@ -66,7 +66,7 @@ class Navigation():
         forandbackward(30, distance, angle_degrees)
         turn(enddegrees+90)
             
-def forandbackward(speed, distance, target=None, multiplier = 0.8, stop = True):
+def forandbackward(speed, distance, target=None, multiplier = 0.8, stop = True,):
     #checking if the target is manually set, if not it will be the current angle of the gyrosensor. This is needed because pythons default value stays the same as when it was initialized
     if target == None:
         target = g.angle
@@ -145,103 +145,115 @@ def turn(target, multiplier=0.6, timeout=None):
     mt.stop()
     time.sleep(0.3)
 
-
+def force_on_for_degrees(motor, speed, degrees):
+    motor.position = 0
+    direction = 1 if degrees >= 0 else -1
+    degrees = abs(degrees)
+    speed *= direction
+    while motor.position < degrees:
+        motor.on(speed)
+        if motor.is_stalled:
+            motor.off()
+            time.sleep(0.1)
+    motor.off()
+    
 def tokiodrift():
     #3,5 sec
     g.reset()
     time.sleep(0.1)
-    forandbackward(80, 240, stop=False)
-    turn(-27, 1)
-    forandbackward(60, 630)
-    turn(-135, 1, timeout=2,)
-    forandbackward(60, -200)
-    g.reset()
-    time.sleep(0.2)
-    forandbackward(60, 250, 10)
-    forandbackward(60, -250)
-    time.sleep(0.1)
-    forandbackward(100, 800, -60)
+    forandbackward(80, -230)
+    turn(-17, 1)
+    forandbackward(80, -645)
+    turn(-80, timeout=1)
+    forandbackward(80, 1000, 0)
+
     
 def big_lap():
     # mozgókép három dimenziónális térben
     # 51 sec
     #   3d mozi
+    mr.reset()
+    ml.reset()
     g.reset()
+    kl.on_for_seconds(-30, 1, block=False)
     forandbackward(60, 500, 0, 0.6)
     turn(44, 0.4)
     g.reset()
     
     #   jelenetváltás
-    time.sleep(0.2)
-    forandbackward(60, 480, 0)
-    kl.on_for_degrees(30, 110)
+    forandbackward(60, 550, 0)
+    kl.on_for_degrees(30, 130)
     #popcorn expert and audience member placed
-    time.sleep(0.2)
-    forandbackward(50, 460)
+    forandbackward(50, 400)
     kr.on_for_degrees(30, -200)
-    turn(50, 0.2)
+    turn(50, 0.4)
     #forandbackward(30, -90)
     #kr.on_for_degrees(60, 900)
     
-    time.sleep(1)
     #put audience member
-    kl.on_for_degrees(30, 120)
+    kl.on_for_degrees(30, 130)
     turn(50)
     forandbackward(30, 195)
     kr.on_for_degrees(60, -300)
     forandbackward(30, 125)
-    forandbackward(30, 75)
-    time.sleep(0.2)
+    forandbackward(30, 20)
+    forandbackward(30, -20)
     
-    kr.on_for_degrees(60, 1000)
-    time.sleep(1)
-    kr.on_for_seconds(-60, 2)
-    time.sleep(0.5)
-    kr.on_for_degrees(60, 600)
-    time.sleep(0.2)
-    forandbackward(30, -100)
-    time.sleep(0.2)
+    force_on_for_degrees(kr, 60, 700)
+    time.sleep(0.1)
+    kr.on_for_seconds(-60, 0.4)
+    time.sleep(0.1)
+    forandbackward(30, -50)
+    time.sleep(0.1)
     kr.on_for_degrees(60, -200)
     
-    kr.on_for_seconds(-60, 1.5)
+    forandbackward(60, 70)
+    force_on_for_degrees(kr, 60, 700)
+    time.sleep(0.1)
+    kr.on_for_seconds(-60, 0.4)
+    time.sleep(0.1)
+    forandbackward(30, -50)
+    time.sleep(0.1)
+    kr.on_for_degrees(60, -200)
+    
+    kr.on_for_seconds(-60, 0.5)
     forandbackward(40, -120)
-    turn(-47, 0.25, 3)
+    turn(-52, 0.4, 3)
     forandbackward(60, 340)
-    kl.on_for_degrees(30, 100)
-    kr.on_for_seconds(-60, 2.5)
+    kl.on_for_degrees(30, 130)
+    kr.on_for_seconds(-60, 0.5)
     #put the expert and audience member down
     forandbackward(60, 200)
 
     forandbackward(60, 40)
     #imerzív tapasztalat lenyomása
     kr.on_for_degrees(60, 700)
-    time.sleep(0.4)
-    forandbackward(60, -50)
     time.sleep(0.1)
+    forandbackward(60, -50)
+    
     kr.on_for_degrees(60, -700)
     #touched imerzív tapasztalat
     forandbackward(60, -80)
-    turn(-105)
+    turn(-115)
     forandbackward(60, 390, stop=False)
     forandbackward(60, 400, -180)
-    turn(-140)
-    kl.on_for_degrees(30, 80)
+    turn(-160)
+    kl.on_for_degrees(30, 130)
     turn(-180)
-    forandbackward(60, 700)
+    forandbackward(60, 655)
     #in front of the rollecoster switch
-    turn(-134)
-    forandbackward(60, 20)
-    time.sleep(0.2)
+    turn(-149)
+    time.sleep(0.1)
     kr.on_for_degrees(60, 700)
-    time.sleep(0.5)
+    time.sleep(0.1)
     #switched the rollercoaster switch
-    forandbackward(60, -120)
+    forandbackward(60, -25)
     kr.on_for_degrees(60, -700)
     turn(-90)
     #after this we move the ring into its box
-    forandbackward(40, -190)
+    forandbackward(40, -280)
     kr.on_for_degrees(60, 500)
-    time.sleep(0.2)
+    
     #putting the rod in the ring
     forandbackward(40, -320)
     turn(-25)
@@ -249,7 +261,7 @@ def big_lap():
     kr.on_for_degrees(60, -500)
     #back to base
     forandbackward(100, -150)
-    turn(-72)
+    turn(-75)
     forandbackward(100, -800, -80)
 
 
@@ -262,7 +274,7 @@ def big_lap():
     g.reset()
     
     #   immerzív tapasztaltat
-    time.sleep(0.3)
+    time.sleep(0.3)í
     forandbackward(60, -325, 30)
     turn(0, timeout=4)
     kl.on_for_degrees(30, 520)
@@ -296,40 +308,39 @@ def rollercoaster():
     #7 sec
     #mozgó kamera ellökése
     g.reset()
-    forandbackward(100, -1000, 0)
-    time.sleep(1)
-    forandbackward(100, 1450, 0)
+    forandbackward(100, -600, 0)
+    time.sleep(0.65)
+    forandbackward(100, 1250, 0)
     forandbackward(100, -800, 0)
 
 def soundmixer():
     #hangmixer
-    #6.1 sec
+    #5 sec
     g.reset()
-    forandbackward(40, 630, 0, 0.5, stop=False)
-    forandbackward(50, 200, 0.5)
-    kr.on_for_degrees(-100, 400)
+    forandbackward(70, 650, 0, 0.5, stop=False)
+    kr.on_for_degrees(-50, 400, block=False)
+    forandbackward(60, 150, 0.5,)
     time.sleep(0.1)
-    forandbackward(20, -200, 0, 0.8, stop=False)
-    forandbackward(60, -750, -30, 0.4)
+    forandbackward(40, -200, 0, 0.8, stop=False)
+    forandbackward(80, -750, -30, 0.4)
 
 def concert():
     #9 sec
     #színpad
     g.reset()
-    forandbackward(60, 350, 1, multiplier=0.3)
-    turn(-45)
+    forandbackward(60, 300, 0, multiplier=0.3)
+    turn(-45,  multiplier=0.6)
     
     #színpad
-    time.sleep(0.5)
-    forandbackward(70, 1100)
-    forandbackward(100, 500, -90)
+    forandbackward(100, 1050)
+    forandbackward(100, 700, -90)
     #forandbackward(60, 430, -45, multiplier=0.3, stop=False)
     #forandbackward(60, 620, -15, 0.3)
     #turn(-90, 0.5) 
     #forandbackward(70, 450, -90, multiplier=0.3,)
-    kr.on_for_degrees(-30, 300) 
-    kl.on_for_degrees(-30, 700)
-    forandbackward(60, -200, -90, 1.5)
+    kr.on_for_degrees(-100, 300) 
+    kl.on_for_degrees(-100, 700)
+    forandbackward(100, -400, -90, 1.5)
     '''forandbackward(60, -750, -45)
     forandbackward(100, -900, 0)'''
 
@@ -337,7 +348,7 @@ def lightshow():
     #fényjáték
     #24 sec
     g.reset()
-    time.sleep(0.5)
+    time.sleep(0.1)
     forandbackward(60, 1200, 0, stop=False)
     forandbackward(45, 200, 0,)
     kl.on_for_rotations(-100, 3.75)
@@ -375,17 +386,17 @@ def lightshow():
 def chicken():
     #17,6 sec
     g.reset()
-    forandbackward(60, 640, 0)
+    forandbackward(60, 640, 1)
     turn(60)
     turn(0, 0.6)
     forandbackward(100, 470)
-    kl.on_for_degrees(100, 4000)
+    kl.on_for_degrees(100, 3000)
     forandbackward(30, -500)
     turn(40)
-    forandbackward(100, 1000, 42, 1, stop=False)
-    forandbackward(60, 200, 38, stop=False)
-    forandbackward(100, 1000, 40, stop=False)
-    forandbackward(60, 1000, 91)
+    forandbackward(100, 500, 40, 1, stop=False)
+    forandbackward(100, 700, 43, stop=False)
+    forandbackward(100, 1000, 43, stop=False)
+    forandbackward(100, 1000, 91)
 
 
 
@@ -435,11 +446,10 @@ while menu == True:
         fo = "exit"
         right = "chicken"
     #print("\033c", end="")
-    print("------------------------------------")
-    print("Nyomj egy felfelét a következő futáshoz")
+    print("---------------")
     print("")
-    print("-------------- " + fo + " ----------------")
-    print("------------------------------------")
+    print(fo)
+    print("---------------")
     btn = Button()
     time.sleep(0.2)
     menu_select = True
