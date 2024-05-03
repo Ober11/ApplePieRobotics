@@ -148,13 +148,24 @@ def turn(target, multiplier=0.6, timeout=None):
 def force_on_for_degrees(motor, speed, degrees):
     motor.position = 0
     direction = 1 if degrees >= 0 else -1
-    degrees = abs(degrees)
     speed *= direction
-    while motor.position < degrees:
-        motor.on(speed)
-        if motor.is_stalled:
-            motor.off()
-            time.sleep(0.1)
+    start_time = time.time()
+    if direction == 1:
+        while motor.position < degrees:
+            if start_time+2 < time.time():
+                break
+            motor.on(speed)
+            if motor.is_stalled:
+                motor.off()
+                time.sleep(0.1)
+    elif direction == -1:
+        while motor.position > degrees:
+            if start_time+2 < time.time():
+                break
+            motor.on(speed)
+            if motor.is_stalled:
+                motor.off()
+                time.sleep(0.1)
     motor.off()
     
 def tokiodrift():
@@ -176,93 +187,79 @@ def big_lap():
     ml.reset()
     g.reset()
     kl.on_for_seconds(-30, 1, block=False)
+    kr.on_for_seconds(-30, 1, block=False)
     forandbackward(60, 500, 0, 0.6)
     turn(44, 0.4)
     g.reset()
     
     #   jelenetváltás
     forandbackward(60, 550, 0)
-    kl.on_for_degrees(30, 130)
+    kl.on_for_degrees(30, 150)
     #popcorn expert and audience member placed
-    forandbackward(50, 400)
+    forandbackward(50, 400, 0)
     kr.on_for_degrees(30, -200)
-    turn(50, 0.4)
+    turn(50, 0.5)
     #forandbackward(30, -90)
     #kr.on_for_degrees(60, 900)
     
     #put audience member
-    kl.on_for_degrees(30, 130)
+    kl.on_for_degrees(30, 125)
     turn(50)
-    forandbackward(30, 195)
+    forandbackward(30, 195, 50)
     kr.on_for_degrees(60, -300)
-    forandbackward(30, 125)
-    forandbackward(30, 20)
-    forandbackward(30, -20)
+    forandbackward(30, 145, 50)
     
     force_on_for_degrees(kr, 60, 700)
     time.sleep(0.1)
-    kr.on_for_seconds(-60, 0.4)
+    forandbackward(30, -100)
     time.sleep(0.1)
-    forandbackward(30, -50)
-    time.sleep(0.1)
-    kr.on_for_degrees(60, -200)
-    
-    forandbackward(60, 70)
-    force_on_for_degrees(kr, 60, 700)
-    time.sleep(0.1)
-    kr.on_for_seconds(-60, 0.4)
-    time.sleep(0.1)
-    forandbackward(30, -50)
-    time.sleep(0.1)
-    kr.on_for_degrees(60, -200)
-    
     kr.on_for_seconds(-60, 0.5)
     forandbackward(40, -120)
-    turn(-52, 0.4, 3)
-    forandbackward(60, 340)
-    kl.on_for_degrees(30, 130)
-    kr.on_for_seconds(-60, 0.5)
+    turn(-49, 0.4,3)
+    forandbackward(60, 380, -49)
+    kr.on_for_seconds(-60, 0.2)
     #put the expert and audience member down
-    forandbackward(60, 200)
-
-    forandbackward(60, 40)
+    forandbackward(60, 245, -40)
     #imerzív tapasztalat lenyomása
-    kr.on_for_degrees(60, 700)
     time.sleep(0.1)
-    forandbackward(60, -50)
+    kl.on_for_degrees(60, -100)
+    kr.on_for_seconds(100, 2)
+    time.sleep(0.1)
+    forandbackward(60, -120, -45)
+    kr.on_for_seconds(100, 0.4)
     
     kr.on_for_degrees(60, -700)
     #touched imerzív tapasztalat
-    forandbackward(60, -80)
-    turn(-115)
-    forandbackward(60, 390, stop=False)
+    forandbackward(60, -120, -40)
+    kl.on_for_degrees(30, 200)
+    time.sleep(1)
+    turn(-100, 0.4)
+    forandbackward(60, 460, -100, stop=False,)
     forandbackward(60, 400, -180)
-    turn(-160)
+    turn(-150)
     kl.on_for_degrees(30, 130)
     turn(-180)
-    forandbackward(60, 655)
+    forandbackward(60, 685, -180)
     #in front of the rollecoster switch
-    turn(-149)
+    turn(-130)
     time.sleep(0.1)
     kr.on_for_degrees(60, 700)
     time.sleep(0.1)
     #switched the rollercoaster switch
-    forandbackward(60, -25)
-    kr.on_for_degrees(60, -700)
+    forandbackward(60, -150, -154)
+    kr.on_for_seconds(-100, 0.5)
     turn(-90)
     #after this we move the ring into its box
-    forandbackward(40, -280)
+    forandbackward(40, -160, -90)
     kr.on_for_degrees(60, 500)
     
     #putting the rod in the ring
-    forandbackward(40, -320)
+    forandbackward(40, -320, -90)
     turn(-25)
-    forandbackward(50, -200)
+    forandbackward(50, -200, -25)
     kr.on_for_degrees(60, -500)
     #back to base
-    forandbackward(100, -150)
-    turn(-75)
-    forandbackward(100, -800, -80)
+    forandbackward(100, -800, -90)
 
 
     '''forandbackward(60, -60)
@@ -328,7 +325,7 @@ def concert():
     #9 sec
     #színpad
     g.reset()
-    forandbackward(60, 300, 0, multiplier=0.3)
+    forandbackward(60, 290, 0, multiplier=0.3)
     turn(-45,  multiplier=0.6)
     
     #színpad
@@ -389,13 +386,13 @@ def chicken():
     forandbackward(60, 640, 1)
     turn(60)
     turn(0, 0.6)
-    forandbackward(100, 470)
+    forandbackward(100, 470, 1)
     kl.on_for_degrees(100, 3000)
     forandbackward(30, -500)
     turn(40)
-    forandbackward(100, 500, 40, 1, stop=False)
-    forandbackward(100, 700, 43, stop=False)
-    forandbackward(100, 1000, 43, stop=False)
+    forandbackward(100, 500, 39, 1, stop=False)
+    forandbackward(100, 700, 40, stop=False)
+    forandbackward(100, 1000, 40, stop=False)
     forandbackward(100, 1000, 91)
 
 
